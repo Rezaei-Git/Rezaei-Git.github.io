@@ -113,9 +113,21 @@ nav {
 .n-links a { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.3); text-decoration: none; transition: color 0.2s; }
 .n-links a:hover { color: var(--w); }
 .n-status { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--w3); }
-.n-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--acc); animation: dot-pulse 2.5s infinite; }
-@keyframes dot-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(79,131,255,.5)} 50%{box-shadow:0 0 0 5px rgba(79,131,255,0)} }
+.n-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.6); animation: dot-pulse 2.5s infinite; }
+@keyframes dot-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.6), 0 0 8px rgba(34,197,94,0.6)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0), 0 0 8px rgba(34,197,94,0.6)} }
 @keyframes show { to { opacity: 1; } }
+
+/* ━━━ LANGUAGE SWITCHER ━━━ */
+.lang-pill { display: flex; gap: 1px; padding: 3px; border: 1px solid var(--line); border-radius: 100px; background: rgba(0,0,0,0.3); }
+.lang-pill button { padding: 6px 12px; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; color: var(--w3); text-transform: uppercase; background: transparent; border: none; border-radius: 100px; cursor: pointer; transition: all 0.3s ease; font-weight: 500; }
+.lang-pill button:hover { color: var(--w); }
+.lang-pill button.active { background: var(--w); color: #060606; }
+.nav-right { display: flex; gap: 16px; align-items: center; }
+@media (max-width: 900px) {
+  .lang-pill button { padding: 5px 9px; font-size: 0.56rem; letter-spacing: 0.08em; }
+  .nav-right { gap: 10px; }
+  .n-status { font-size: 0.56rem; }
+}
 
 /* ━━━ HERO ━━━ */
 .hero {
@@ -226,6 +238,7 @@ nav {
 /* ━━━ SECTION BASE ━━━ */
 .sec { border-bottom: 1px solid var(--line); background-color: #060606; }
 .sw { padding: 96px 52px; background-color: #060606; }
+#experience .sw { padding-top: 80px; padding-bottom: 72px; }
 .sbar {
   display: flex; align-items: flex-end; justify-content: space-between;
   border-bottom: 1px solid var(--line); padding-bottom: 22px; margin-bottom: 64px;
@@ -379,7 +392,7 @@ nav {
 .exp-l { border-top: 1px solid var(--line); }
 .exp-r {
   display: grid; grid-template-columns: 120px 1fr 90px;
-  gap: 32px; padding: 30px 0; border-bottom: 1px solid var(--line);
+  gap: 32px; padding: 20px 0; border-bottom: 1px solid var(--line);
   position: relative; transition: all 0.25s; align-items: start;
 }
 .exp-r::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: var(--acc); transform: scaleY(0); transform-origin: bottom; transition: transform 0.3s; }
@@ -397,8 +410,10 @@ nav {
 }
 .co-logo:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); transform: translateY(-2px); }
 .co-logo svg { width: 22px; height: 22px; stroke: rgba(255,255,255,0.85); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s; }
+
 .co-logo:hover svg { stroke: #ffffff; }
 .co-logo:hover svg [fill] { fill: #ffffff !important; }
+
 .e-body {}
 .e-title { font-size: 0.95rem; font-weight: 500; color: var(--w); margin-bottom: 3px; line-height: 1.3; }
 .e-co { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.08em; color: var(--acc); margin-bottom: 12px; }
@@ -458,6 +473,7 @@ footer { display: flex; justify-content: space-between; align-items: center; pad
 footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--w3); }
 
 /* ━━━ REVEAL ━━━ */
+
 .rv { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
 .rv.in { opacity: 1; transform: none; }
 
@@ -563,7 +579,13 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
 <nav>
   <span class="n-logo"></span>
 
-  <div class="n-status"><span class="n-dot"></span>Open to Work · Berlin</div>
+  <div class="nav-right">
+    <div class="n-status"><span class="n-dot"></span><span data-i18n="status">Open to Work</span></div>
+    <div class="lang-pill" id="langPill">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="de">DE</button>
+    </div>
+  </div>
 </nav>
 
 <!-- ━━━ HERO ━━━ -->
@@ -573,17 +595,17 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
   <div class="hero-left">
     <div>
       
-      <h1 class="h-name">AMIR<br><span class="nd">REZAEI</span></h1>
-      <p class="h-role">IT Support Specialist</p>
-      <p class="h-desc"><strong>10+ years</strong> building and maintaining IT infrastructure. Windows Server · Active Directory · VMware. From Tehran to Berlin.</p>
+      <h1 class="h-name" data-i18n="hero-name">AMIR<br><span class="nd">REZAEI</span></h1>
+      <p class="h-role" data-i18n="hero-role">IT Support Specialist</p>
+      <p class="h-desc" data-i18n="hero-desc"><strong>10+ years</strong> building and maintaining IT infrastructure. Windows Server · Active Directory · VMware. From Tehran to Berlin. I work with strong motivation and love teamwork — every challenge is a chance to grow.</p>
       <div class="h-grid">
-        <div class="hg"><div class="hg-k">Role</div><div class="hg-v">IT Support Specialist</div></div>
-        <div class="hg"><div class="hg-k">Status</div><div class="hg-v ac">Available</div></div>
-        <div class="hg"><div class="hg-k">Location</div><div class="hg-v">Berlin, DE</div></div>
-        <div class="hg"><div class="hg-k">Experience</div><div class="hg-v ac">10+ Years</div></div>
+        <div class="hg"><div class="hg-k" data-i18n="stat-role-k">Role</div><div class="hg-v" data-i18n="stat-role-v">IT Support Specialist</div></div>
+        <div class="hg"><div class="hg-k" data-i18n="stat-status-k">Status</div><div class="hg-v ac" data-i18n="stat-status-v">Available</div></div>
+        <div class="hg"><div class="hg-k" data-i18n="stat-loc-k">Location</div><div class="hg-v" data-i18n="stat-loc-v">Berlin, DE</div></div>
+        <div class="hg"><div class="hg-k" data-i18n="stat-exp-k">Experience</div><div class="hg-v ac" data-i18n="stat-exp-v">10+ Years</div></div>
       </div>
       <div class="h-btns">
-        <a href="mailto:a.rezaei.official@gmail.com" class="btn-pri">✉ Get in Touch</a>
+        <a href="mailto:a.rezaei.official@gmail.com" class="btn-pri" data-i18n="btn-contact">✉ Get in Touch</a>
         <a href="https://linkedin.com/in/amir-rezaei" target="_blank" class="btn-sec">LinkedIn ↗</a>
       </div>
     </div>
@@ -611,19 +633,19 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
 <!-- ━━━ STATEMENT ━━━ -->
 <div class="statement rv">
   <div class="stmt-glow"></div>
-  <div class="stmt-l">Professional Profile</div>
-  <div class="stmt-h">A DECADE OF<br><span class="sd">KEEPING SYSTEMS</span><br>ONLINE & SECURE</div>
-  <p class="stmt-p">From Windows Server environments to enterprise virtualization, I build infrastructure organizations depend on — quietly, reliably, every day.</p>
+  <div class="stmt-l" data-i18n="stmt-label">Professional Profile</div>
+  <div class="stmt-h" data-i18n="stmt-h">A DECADE OF<br><span class="sd">KEEPING SYSTEMS</span><br>ONLINE & SECURE</div>
+  <p class="stmt-p" data-i18n="stmt-p">From Windows Server environments to enterprise virtualization, I build infrastructure organizations depend on — quietly, reliably, every day.</p>
 </div>
 
 <!-- ━━━ ABOUT ━━━ -->
 <div class="sec" id="about">
   <div class="sw">
-    <div class="sbar rv"><span class="sn">About</span><h2 class="sh">WHO<br><em>I AM</em></h2></div>
+    <div class="sbar rv"><span class="sn" data-i18n="sec-about">About</span><h2 class="sh" data-i18n="sec-about-h">WHO<br><em>I AM</em></h2></div>
     <div class="about-split">
       <div class="about-copy rv">
-        <p class="type-p">I'm an <strong>IT Support Specialist</strong> with over 10 years of hands-on experience designing and maintaining IT infrastructure for small to mid-sized organizations. My work spans <strong>Windows Server</strong> administration, <strong>Active Directory</strong>, and enterprise virtualization using <strong>VMware vCenter</strong> and Hyper-V.</p>
-        <p class="type-p">After a decade in Tehran, I relocated to <strong>Berlin in 2025</strong>, gaining hands-on German work experience at <strong>Bama Netz</strong> — installing fiber optic infrastructure and configuring ONT devices across residential buildings.</p>
+        <p class="type-p" data-i18n="about-p1">I'm an <strong>IT Support Specialist</strong> with over 10 years of hands-on experience designing and maintaining IT infrastructure for small to mid-sized organizations. My work spans <strong>Windows Server</strong> administration, <strong>Active Directory</strong>, and enterprise virtualization using <strong>VMware vCenter</strong> and Hyper-V.</p>
+        <p class="type-p" data-i18n="about-p2">After a decade in Tehran, I relocated to <strong>Berlin in 2025</strong>, gaining hands-on German work experience at <strong>Bama Netz</strong> — installing fiber optic infrastructure and configuring ONT devices across residential buildings.</p>
 
       </div>
 
@@ -634,7 +656,7 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
 <!-- ━━━ SKILLS ━━━ -->
 <div class="sec">
   <div class="sw">
-    <div class="sbar rv"><span class="sn">Tech Stack</span><h2 class="sh">TOOLS &<br><em>TECHNOLOGIES</em></h2></div>
+    <div class="sbar rv"><span class="sn" data-i18n="sec-stack">Tech Stack</span><h2 class="sh" data-i18n="sec-stack-h">TOOLS &<br><em>TECHNOLOGIES</em></h2></div>
     <div class="hub-wrap rv">
     <svg id="hubSvg" viewBox="0 0 920 600" width="100%" class="hub-svg" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -843,61 +865,16 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
   </div>
 </div>
 
-<!-- ━━━ CAPABILITIES ━━━ -->
-<div class="sec" id="capabilities">
-  <div class="sw">
-    <div class="sbar rv"><span class="sn">03 / Capabilities</span><h2 class="sh">CORE<br><em>SYSTEMS</em></h2></div>
-    <div class="cap-grid">
-      <div class="cap-card rv">
-        <div class="cap-num">01 / Systems</div>
-        <div class="cap-title">Systems & Administration</div>
-        <p class="cap-desc">Full lifecycle management of Windows Server environments — domain setup, daily operations, security hardening, and patch management.</p>
-        <div class="cap-tags"><span class="cap-tag">Windows Server 2016–2022</span><span class="cap-tag">Active Directory</span><span class="cap-tag">Group Policy</span><span class="cap-tag">User Management</span></div>
-      </div>
-      <div class="cap-card rv">
-        <div class="cap-num">02 / Virtual</div>
-        <div class="cap-title">Virtualization</div>
-        <p class="cap-desc">Deploying and managing virtual machines in production. OVA/OVF templates, snapshots, and performance optimization across vCenter fleets.</p>
-        <div class="cap-tags"><span class="cap-tag">VMware ESXi</span><span class="cap-tag">vCenter</span><span class="cap-tag">Hyper-V</span><span class="cap-tag">OVA/OVF</span><span class="cap-tag">VHDX</span></div>
-      </div>
-      <div class="cap-card rv">
-        <div class="cap-num">03 / Network</div>
-        <div class="cap-title">Networking</div>
-        <p class="cap-desc">TCP/IP stack, DNS/DHCP management, and physical infrastructure — from fiber optic cabling to ONT installation in residential deployments.</p>
-        <div class="cap-tags"><span class="cap-tag">TCP/IP</span><span class="cap-tag">DNS</span><span class="cap-tag">DHCP</span><span class="cap-tag">Fiber Optic</span><span class="cap-tag">ONT</span></div>
-      </div>
-      <div class="cap-card rv">
-        <div class="cap-num">04 / Security</div>
-        <div class="cap-title">Security & Access</div>
-        <p class="cap-desc">Access control via Active Directory, firewall configuration, remote access management, and antivirus deployment across endpoints.</p>
-        <div class="cap-tags"><span class="cap-tag">Firewall</span><span class="cap-tag">Remote Access</span><span class="cap-tag">Access Control</span><span class="cap-tag">Antivirus</span></div>
-      </div>
-      <div class="cap-card rv">
-        <div class="cap-num">05 / Support</div>
-        <div class="cap-title">IT Support</div>
-        <p class="cap-desc">End-user support for 100+ users. Hardware troubleshooting, incident resolution, and software configuration across Windows and macOS.</p>
-        <div class="cap-tags"><span class="cap-tag">Win 10/11</span><span class="cap-tag">macOS</span><span class="cap-tag">Hardware</span><span class="cap-tag">Incident Resolution</span></div>
-      </div>
-      <div class="cap-card rv">
-        <div class="cap-num">06 / Backup</div>
-        <div class="cap-title">Backup & Recovery</div>
-        <p class="cap-desc">Monitoring backup jobs, executing restore operations, and ensuring data integrity across server and client environments.</p>
-        <div class="cap-tags"><span class="cap-tag">Backup Monitoring</span><span class="cap-tag">Restore Ops</span><span class="cap-tag">Data Integrity</span><span class="cap-tag">Documentation</span></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ━━━ EXPERIENCE ━━━ -->
 <div class="sec" id="experience">
   <div class="sw">
-    <div class="sbar rv"><span class="sn">Experience</span><h2 class="sh">WORK<br><em>HISTORY</em></h2></div>
+    <div class="sbar rv"><span class="sn" data-i18n="sec-exp">Experience</span><h2 class="sh" data-i18n="sec-exp-h">WORK<br><em>HISTORY</em></h2></div>
     <div class="exp-l">
       <div class="exp-r rv">
         <div class="e-date">Oct 2025<br>Present<div class="co-logo" title="Self-directed Learning">
         <svg viewBox="0 0 24 24"><path d="M4 19V5a2 2 0 0 1 2-2h14v18H6a2 2 0 0 0-2 2"/><path d="M4 19a2 2 0 0 1 2-2h14"/><path d="M10 7l3-2 3 2"/></svg>
     </div></div>
-        <div class="e-body"><div class="e-title">Professional Development</div><div class="e-co">Self-directed · Berlin</div><ul class="e-pts"><li>German Language B1 — advancing to B2</li><li>Advanced IT: Windows Server, Active Directory, Virtualization & Networking</li></ul></div>
+        <div class="e-body"><div class="e-title" data-i18n="exp1-t">Professional Development</div><div class="e-co" data-i18n="exp1-co">Self-directed · Berlin</div><ul class="e-pts"><li data-i18n="exp1-p1">German Language B1 — advancing to B2</li><li data-i18n="exp1-p2">Advanced IT: Windows Server, Active Directory, Virtualization & Networking</li></ul></div>
         <div class="e-st live">● LIVE</div>
       </div>
       <div class="exp-r rv">
@@ -912,18 +889,18 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
           <line x1="3" y1="2" x2="6" y2="5"/>
         </svg>
     </div></div>
-        <div class="e-body"><div class="e-title">Fiber Optic Technician — IT Infrastructure</div><div class="e-co">Bama Netz · Berlin 🇩🇪</div><ul class="e-pts"><li>Installed and routed fiber optic cabling in residential buildings</li><li>Configured ONT devices in residential units</li><li>Pulled fiber through microducts; supported building entry connections</li></ul><div class="e-tags"><span class="e-tag">Fiber Optic</span><span class="e-tag">ONT Config</span><span class="e-tag">LAN</span></div></div>
+        <div class="e-body"><div class="e-title" data-i18n="exp2-t">Fiber Optic Technician — IT Infrastructure</div><div class="e-co">Bama Netz · Berlin 🇩🇪</div><ul class="e-pts"><li data-i18n="exp2-p1">Installed and routed fiber optic cabling in residential buildings</li><li data-i18n="exp2-p2">Configured ONT devices in residential units</li><li data-i18n="exp2-p3">Pulled fiber through microducts; supported building entry connections</li></ul><div class="e-tags"><span class="e-tag">Fiber Optic</span><span class="e-tag">ONT Config</span><span class="e-tag">LAN</span></div></div>
         <div class="e-st done">■ DONE</div>
       </div>
       <div class="exp-r rv">
         <div class="e-date">Feb 2013<br>Feb 2025<div class="co-logo" title="Mabna DP">
-        <svg viewBox="0 0 24 24">
-          <!-- Persian letter م (mim): round head + vertical tail -->
-          <circle cx="13" cy="9" r="4" stroke-width="1.7"/>
-          <line x1="13" y1="13" x2="13" y2="20" stroke-width="1.7"/>
+        <svg viewBox="0 0 24 24" fill="none">
+          <!-- Mabna DP logo: rounded triangular shield with inner A (white outline style) -->
+          <path d="M12 3.8 L20.6 18.9 Q21.2 20 20.1 20 L3.9 20 Q2.8 20 3.4 18.9 Z"/>
+          <path d="M12 9.5 L15.8 16.5 L8.2 16.5 Z"/>
         </svg>
     </div></div>
-        <div class="e-body"><div class="e-title">IT Support Specialist — Systems & Applications</div><div class="e-co">Mabna DP · Tehran, Iran</div><ul class="e-pts"><li>Managed Windows Server environments — stable and secure operations</li><li>Administered Active Directory: provisioning, access control, Group Policy</li><li>Deployed and managed VMs using VMware vCenter in production</li><li>Monitored backup/restore ensuring data integrity · 100+ end users</li></ul><div class="e-tags"><span class="e-tag">Windows Server</span><span class="e-tag">VMware vCenter</span><span class="e-tag">AD</span><span class="e-tag">Group Policy</span></div></div>
+        <div class="e-body"><div class="e-title" data-i18n="exp3-t">IT Support Specialist — Systems & Applications</div><div class="e-co">Mabna DP · Tehran, Iran</div><ul class="e-pts"><li data-i18n="exp3-p1">Managed Windows Server environments — stable and secure operations</li><li data-i18n="exp3-p2">Administered Active Directory: provisioning, access control, Group Policy</li><li data-i18n="exp3-p3">Deployed and managed VMs using VMware vCenter in production</li><li data-i18n="exp3-p4">Monitored backup/restore ensuring data integrity · 100+ end users</li></ul><div class="e-tags"><span class="e-tag">Windows Server</span><span class="e-tag">VMware vCenter</span><span class="e-tag">AD</span><span class="e-tag">Group Policy</span></div></div>
         <div class="e-st done">■ DONE</div>
       </div>
       <div class="exp-r rv">
@@ -937,7 +914,7 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
           <path d="M6 11 Q8 6 14 5"/>
         </svg>
     </div></div>
-        <div class="e-body"><div class="e-title">IT Support Specialist — Systems & Infrastructure</div><div class="e-co">Azarin Yashil Forozan · Tehran</div><ul class="e-pts"><li>Remote IT support and system monitoring for servers and clients</li><li>AD administration and Group Policy configurations</li><li>Proactive server monitoring and error resolution</li></ul><div class="e-tags"><span class="e-tag">Remote Support</span><span class="e-tag">AD</span><span class="e-tag">Monitoring</span></div></div>
+        <div class="e-body"><div class="e-title" data-i18n="exp4-t">IT Support Specialist — Systems & Infrastructure</div><div class="e-co">Azarin Yashil Forozan · Tehran</div><ul class="e-pts"><li data-i18n="exp4-p1">Remote IT support and system monitoring for servers and clients</li><li data-i18n="exp4-p2">AD administration and Group Policy configurations</li><li data-i18n="exp4-p3">Proactive server monitoring and error resolution</li></ul><div class="e-tags"><span class="e-tag">Remote Support</span><span class="e-tag">AD</span><span class="e-tag">Monitoring</span></div></div>
         <div class="e-st done">■ DONE</div>
       </div>
       <div class="exp-r rv">
@@ -953,22 +930,67 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
           <path d="M7 3 Q12 0 17 3" stroke-width="1.2" opacity="0.6"/>
         </svg>
     </div></div>
-        <div class="e-body"><div class="e-title">IT Support Technician — Infrastructure & Hardware</div><div class="e-co">Alvand Pardazesh · Hamedan, Iran</div><ul class="e-pts"><li>Backup operations and data security</li><li>Hardware/software support across client environments</li><li>Passive network infrastructure implementation</li></ul></div>
+        <div class="e-body"><div class="e-title" data-i18n="exp5-t">IT Support Technician — Infrastructure & Hardware</div><div class="e-co">Alvand Pardazesh · Hamedan, Iran</div><ul class="e-pts"><li data-i18n="exp5-p1">Backup operations and data security</li><li data-i18n="exp5-p2">Hardware/software support across client environments</li><li data-i18n="exp5-p3">Passive network infrastructure implementation</li></ul></div>
         <div class="e-st done">■ DONE</div>
       </div>
     </div>
   </div>
 </div>
+<!-- ━━━ CAPABILITIES ━━━ -->
+<div class="sec" id="capabilities">
+  <div class="sw">
+    <div class="sbar rv"><span class="sn" data-i18n="sec-cap">03 / Capabilities</span><h2 class="sh" data-i18n="sec-cap-h">CORE<br><em>SYSTEMS</em></h2></div>
+    <div class="cap-grid">
+      <div class="cap-card rv">
+        <div class="cap-num">01 / Systems</div>
+        <div class="cap-title" data-i18n="cap1-t">Systems & Administration</div>
+        <p class="cap-desc" data-i18n="cap1-d">Full lifecycle management of Windows Server environments — domain setup, daily operations, security hardening, and patch management.</p>
+        <div class="cap-tags"><span class="cap-tag">Windows Server 2016–2022</span><span class="cap-tag">Active Directory</span><span class="cap-tag">Group Policy</span><span class="cap-tag">User Management</span></div>
+      </div>
+      <div class="cap-card rv">
+        <div class="cap-num">02 / Virtual</div>
+        <div class="cap-title" data-i18n="cap2-t">Virtualization</div>
+        <p class="cap-desc" data-i18n="cap2-d">Deploying and managing virtual machines in production. OVA/OVF templates, snapshots, and performance optimization across vCenter fleets.</p>
+        <div class="cap-tags"><span class="cap-tag">VMware ESXi</span><span class="cap-tag">vCenter</span><span class="cap-tag">Hyper-V</span><span class="cap-tag">OVA/OVF</span><span class="cap-tag">VHDX</span></div>
+      </div>
+      <div class="cap-card rv">
+        <div class="cap-num">03 / Network</div>
+        <div class="cap-title" data-i18n="cap3-t">Networking</div>
+        <p class="cap-desc" data-i18n="cap3-d">TCP/IP stack, DNS/DHCP management, and physical infrastructure — from fiber optic cabling to ONT installation in residential deployments.</p>
+        <div class="cap-tags"><span class="cap-tag">TCP/IP</span><span class="cap-tag">DNS</span><span class="cap-tag">DHCP</span><span class="cap-tag">Fiber Optic</span><span class="cap-tag">ONT</span></div>
+      </div>
+      <div class="cap-card rv">
+        <div class="cap-num">04 / Security</div>
+        <div class="cap-title" data-i18n="cap4-t">Security & Access</div>
+        <p class="cap-desc" data-i18n="cap4-d">Access control via Active Directory, firewall configuration, remote access management, and antivirus deployment across endpoints.</p>
+        <div class="cap-tags"><span class="cap-tag">Firewall</span><span class="cap-tag">Remote Access</span><span class="cap-tag">Access Control</span><span class="cap-tag">Antivirus</span></div>
+      </div>
+      <div class="cap-card rv">
+        <div class="cap-num">05 / Support</div>
+        <div class="cap-title" data-i18n="cap5-t">IT Support</div>
+        <p class="cap-desc" data-i18n="cap5-d">End-user support for 100+ users. Hardware troubleshooting, incident resolution, and software configuration across Windows and macOS.</p>
+        <div class="cap-tags"><span class="cap-tag">Win 10/11</span><span class="cap-tag">macOS</span><span class="cap-tag">Hardware</span><span class="cap-tag">Incident Resolution</span></div>
+      </div>
+      <div class="cap-card rv">
+        <div class="cap-num">06 / Backup</div>
+        <div class="cap-title" data-i18n="cap6-t">Backup & Recovery</div>
+        <p class="cap-desc" data-i18n="cap6-d">Monitoring backup jobs, executing restore operations, and ensuring data integrity across server and client environments.</p>
+        <div class="cap-tags"><span class="cap-tag">Backup Monitoring</span><span class="cap-tag">Restore Ops</span><span class="cap-tag">Data Integrity</span><span class="cap-tag">Documentation</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <!-- ━━━ PROJECTS ━━━ -->
 <div class="sec" id="projects">
   <div class="sw">
-    <div class="sbar rv"><span class="sn">Projects</span><h2 class="sh">INFRA<br><em>BUILT</em></h2></div>
+    <div class="sbar rv"><span class="sn" data-i18n="sec-proj">Projects</span><h2 class="sh" data-i18n="sec-proj-h">INFRA<br><em>BUILT</em></h2></div>
     <div class="p-grid">
-      <div class="p-card rv"><div class="p-idx">PROJ_001 <span>200 employees</span></div><div class="p-name">CURE Technology Management</div><div class="p-date">March 2014 · Tehran</div><p class="p-desc">Design and deployment of active and passive network infrastructure including full structured cabling for a 200-person organization.</p></div>
-      <div class="p-card rv"><div class="p-idx">PROJ_002 <span>80 employees</span></div><div class="p-name">Sepehr Andish Asia</div><div class="p-date">August 2019 · Tehran</div><p class="p-desc">Windows Server configuration, domain setup, and complete Active Directory deployment across an 80-user corporate environment.</p></div>
-      <div class="p-card rv"><div class="p-idx">PROJ_003 <span>25 employees</span></div><div class="p-name">Azarin Yashil Forozan</div><div class="p-date">July 2022 · Tehran</div><p class="p-desc">End-to-end network infrastructure design covering active and passive components for a growing 25-person company.</p></div>
-      <div class="p-card rv"><div class="p-idx">PROJ_004 <span>6 employees</span></div><div class="p-name">Sabzgaman</div><div class="p-date">March 2021 · Tehran</div><p class="p-desc">Complete small-scale network from scratch: workgroup config, file-sharing, and full connectivity for the entire team.</p></div>
+      <div class="p-card rv"><div class="p-idx">PROJ_001 <span>200 employees</span></div><div class="p-name">CURE Technology Management</div><div class="p-date">March 2014 · Tehran</div><p class="p-desc" data-i18n="proj1-d">Design and deployment of active and passive network infrastructure including full structured cabling for a 200-person organization.</p></div>
+      <div class="p-card rv"><div class="p-idx">PROJ_002 <span>80 employees</span></div><div class="p-name">Sepehr Andish Asia</div><div class="p-date">August 2019 · Tehran</div><p class="p-desc" data-i18n="proj2-d">Windows Server configuration, domain setup, and complete Active Directory deployment across an 80-user corporate environment.</p></div>
+      <div class="p-card rv"><div class="p-idx">PROJ_003 <span>25 employees</span></div><div class="p-name">Azarin Yashil Forozan</div><div class="p-date">July 2022 · Tehran</div><p class="p-desc" data-i18n="proj3-d">End-to-end network infrastructure design covering active and passive components for a growing 25-person company.</p></div>
+      <div class="p-card rv"><div class="p-idx">PROJ_004 <span>6 employees</span></div><div class="p-name">Sabzgaman</div><div class="p-date">March 2021 · Tehran</div><p class="p-desc" data-i18n="proj4-d">Complete small-scale network from scratch: workgroup config, file-sharing, and full connectivity for the entire team.</p></div>
     </div>
   </div>
 </div>
@@ -976,29 +998,37 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
 <!-- ━━━ APPROACH ━━━ -->
 <div class="approach rv">
   <div class="appr-glow"></div>
-  <div class="appr-l">Professional Approach</div>
-  <div class="appr-h">SYSTEMS THAT WORK<br><span class="sd">WHILE YOU SLEEP</span></div>
-  <p class="appr-p">I document everything, monitor proactively, and resolve before users notice. Infrastructure should be invisible — a sign it's working exactly as designed.</p>
+  <div class="appr-l" data-i18n="appr-l">Professional Approach</div>
+  <div class="appr-h" data-i18n="appr-h">SYSTEMS THAT WORK<br><span class="sd">WHILE YOU SLEEP</span></div>
+  <p class="appr-p" data-i18n="appr-p">I document everything, monitor proactively, and resolve before users notice. Infrastructure should be invisible — a sign it's working exactly as designed.</p>
 </div>
 
 <!-- ━━━ CONTACT ━━━ -->
 <div class="sec" id="contact">
   <div class="contact-wrap">
-    <span class="ct-n rv">Contact</span>
-    <h2 class="ct-h rv">LET'S<br><em>WORK.</em></h2>
-    <p class="ct-sub rv" id="ctSubP">Based in Berlin. Seeking IT Support roles. Ready from day one.</p>
+    <span class="ct-n rv" data-i18n="ct-label">Contact</span>
+    <h2 class="ct-h rv" data-i18n="ct-h">LET'S<br><em>WORK.</em></h2>
+    <p class="ct-sub rv" id="ctSubP" data-i18n="ct-sub">Based in Berlin. Seeking IT Support roles. Ready from day one.</p>
     <div class="ct-panel rv">
       <a href="mailto:a.rezaei.official@gmail.com" class="cl">
         <svg class="c-svg" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
         a.rezaei.official@gmail.com
       </a>
-      <a href="tel:+4917623403938" class="cl">
-        <svg class="c-svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        +49 176 23403938
-      </a>
       <a href="https://linkedin.com/in/amir-rezaei" target="_blank" class="cl">
         <svg class="c-svg" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
         linkedin.com/in/amir-rezaei
+      </a>
+      <a href="https://github.com/Rezaei-Git" target="_blank" rel="noopener" class="cl">
+        <svg class="c-svg" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        github.com/Rezaei-Git
+      </a>
+      <a href="https://rezaei-git.github.io" target="_blank" rel="noopener" class="cl">
+        <svg class="c-svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        rezaei-git.github.io
+      </a>
+      <a href="https://webtalk-global.slack.com/team/U0113B78BNX" target="_blank" rel="noopener" class="cl">
+        <svg class="c-svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Slack: @a.rezaei
       </a>
     </div>
   </div>
@@ -1006,7 +1036,7 @@ footer span { font-family: var(--mono); font-size: 0.54rem; letter-spacing: 0.12
 
 <footer>
   <span>© 2026 Amir Rezaei</span>
-  <span>IT Support Specialist · Berlin, Germany</span>
+  <span data-i18n="foot">IT Support Specialist · Berlin, Germany</span>
 </footer>
 
 <script>
@@ -1176,6 +1206,169 @@ if (ctSub) {
   }, { threshold: 0.4 });
   ctObs.observe(ctSub);
 }
+
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// LANGUAGE SWITCHER — EN / DE / FA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const I18N = {
+  en: {
+    "status": "Open to Work",
+    "hero-name": 'AMIR<br><span class="nd">REZAEI</span>',
+    "hero-role": "IT Support Specialist",
+    "hero-desc": "<strong>10+ years</strong> building and maintaining IT infrastructure. Windows Server · Active Directory · VMware. From Tehran to Berlin. I work with strong motivation and love teamwork — every challenge is a chance to grow.",
+    "stat-role-k": "Role", "stat-role-v": "IT Support Specialist",
+    "stat-status-k": "Status", "stat-status-v": "Available",
+    "stat-loc-k": "Location", "stat-loc-v": "Berlin, DE",
+    "stat-exp-k": "Experience", "stat-exp-v": "10+ Years",
+    "btn-contact": "✉ Get in Touch",
+    "stmt-label": "Professional Profile",
+    "stmt-h": 'A DECADE OF<br><span class="sd">KEEPING SYSTEMS</span><br>ONLINE & SECURE',
+    "stmt-p": "From Windows Server environments to enterprise virtualization, I build infrastructure organizations depend on — quietly, reliably, every day.",
+    "sec-about": "About", "sec-about-h": "WHO<br><em>I AM</em>",
+    "about-p1": "I'm an <strong>IT Support Specialist</strong> with over 10 years of hands-on experience designing and maintaining IT infrastructure for small to mid-sized organizations. My work spans <strong>Windows Server</strong> administration, <strong>Active Directory</strong>, and enterprise virtualization using <strong>VMware vCenter</strong> and Hyper-V.",
+    "about-p2": "After a decade in Tehran, I relocated to <strong>Berlin in 2025</strong>, gaining hands-on German work experience at <strong>Bama Netz</strong> — installing fiber optic infrastructure and configuring ONT devices across residential buildings.",
+    "sec-stack": "Tech Stack", "sec-stack-h": "TOOLS &<br><em>TECHNOLOGIES</em>",
+    "sec-cap": "03 / Capabilities", "sec-cap-h": "CORE<br><em>SYSTEMS</em>",
+    "cap1-t": "Systems & Administration",
+    "cap1-d": "Full lifecycle management of Windows Server environments — domain setup, daily operations, security hardening, and patch management.",
+    "cap2-t": "Virtualization",
+    "cap2-d": "Deploying and managing virtual machines in production. OVA/OVF templates, snapshots, and performance optimization across vCenter fleets.",
+    "cap3-t": "Networking",
+    "cap3-d": "TCP/IP stack, DNS/DHCP management, and physical infrastructure — from fiber optic cabling to ONT installation in residential deployments.",
+    "cap4-t": "Security & Access",
+    "cap4-d": "Access control via Active Directory, firewall configuration, remote access management, and antivirus deployment across endpoints.",
+    "cap5-t": "IT Support",
+    "cap5-d": "End-user support for 100+ users. Hardware troubleshooting, incident resolution, and software configuration across Windows and macOS.",
+    "cap6-t": "Backup & Recovery",
+    "cap6-d": "Monitoring backup jobs, executing restore operations, and ensuring data integrity across server and client environments.",
+    "sec-exp": "Experience", "sec-exp-h": "WORK<br><em>HISTORY</em>",
+    "exp1-t": "Professional Development", "exp1-co": "Self-directed · Berlin",
+    "exp1-p1": "German Language B1 — advancing to B2",
+    "exp1-p2": "Advanced IT: Windows Server, Active Directory, Virtualization & Networking",
+    "exp2-t": "Fiber Optic Technician — IT Infrastructure",
+    "exp2-p1": "Installed and routed fiber optic cabling in residential buildings",
+    "exp2-p2": "Configured ONT devices in residential units",
+    "exp2-p3": "Pulled fiber through microducts; supported building entry connections",
+    "exp3-t": "IT Support Specialist — Systems & Applications",
+    "exp3-p1": "Managed Windows Server environments — stable and secure operations",
+    "exp3-p2": "Administered Active Directory: provisioning, access control, Group Policy",
+    "exp3-p3": "Deployed and managed VMs using VMware vCenter in production",
+    "exp3-p4": "Monitored backup/restore ensuring data integrity · 100+ end users",
+    "exp4-t": "IT Support Specialist — Systems & Infrastructure",
+    "exp4-p1": "Remote IT support and system monitoring for servers and clients",
+    "exp4-p2": "AD administration and Group Policy configurations",
+    "exp4-p3": "Proactive server monitoring and error resolution",
+    "exp5-t": "IT Support Technician — Infrastructure & Hardware",
+    "exp5-p1": "Backup operations and data security",
+    "exp5-p2": "Hardware/software support across client environments",
+    "exp5-p3": "Passive network infrastructure implementation",
+    "sec-proj": "Projects", "sec-proj-h": "INFRA<br><em>BUILT</em>",
+    "proj1-d": "Design and deployment of active and passive network infrastructure including full structured cabling for a 200-person organization.",
+    "proj2-d": "Windows Server configuration, domain setup, and complete Active Directory deployment across an 80-user corporate environment.",
+    "proj3-d": "End-to-end network infrastructure design covering active and passive components for a growing 25-person company.",
+    "proj4-d": "Complete small-scale network from scratch: workgroup config, file-sharing, and full connectivity for the entire team.",
+    "appr-l": "Professional Approach",
+    "appr-h": 'SYSTEMS THAT WORK<br><span class="sd">WHILE YOU SLEEP</span>',
+    "appr-p": "I document everything, monitor proactively, and resolve before users notice. Infrastructure should be invisible — a sign it's working exactly as designed.",
+    "ct-label": "Contact",
+    "ct-h": "LET'S<br><em>WORK.</em>",
+    "ct-sub": "Based in Berlin. Seeking IT Support roles. Ready from day one.",
+    "foot": "IT Support Specialist · Berlin, Germany"
+  },
+  de: {
+    "status": "Offen für neue Stellen",
+    "hero-name": 'AMIR<br><span class="nd">REZAEI</span>',
+    "hero-role": "IT-Support-Spezialist",
+    "hero-desc": "<strong>Über 10 Jahre</strong> Aufbau und Wartung von IT-Infrastruktur. Windows Server · Active Directory · VMware. Von Teheran nach Berlin. Ich arbeite mit hoher Motivation und liebe Teamwork — jede Herausforderung ist eine Chance zu wachsen.",
+    "stat-role-k": "Rolle", "stat-role-v": "IT-Support-Spezialist",
+    "stat-status-k": "Status", "stat-status-v": "Verfügbar",
+    "stat-loc-k": "Standort", "stat-loc-v": "Berlin, DE",
+    "stat-exp-k": "Erfahrung", "stat-exp-v": "10+ Jahre",
+    "btn-contact": "✉ Kontakt aufnehmen",
+    "stmt-label": "Berufliches Profil",
+    "stmt-h": 'EIN JAHRZEHNT<br><span class="sd">SYSTEME LAUFEN</span><br>ONLINE & SICHER',
+    "stmt-p": "Von Windows Server-Umgebungen bis zur Enterprise-Virtualisierung — ich baue Infrastruktur, auf die sich Unternehmen verlassen können. Leise, zuverlässig, jeden Tag.",
+    "sec-about": "Über mich", "sec-about-h": "WER<br><em>ICH BIN</em>",
+    "about-p1": "Ich bin <strong>IT-Support-Spezialist</strong> mit über 10 Jahren praktischer Erfahrung im Aufbau und Wartung von IT-Infrastruktur für kleine bis mittelgroße Unternehmen. Mein Fachgebiet umfasst <strong>Windows Server</strong>-Administration, <strong>Active Directory</strong> und Enterprise-Virtualisierung mit <strong>VMware vCenter</strong> und Hyper-V.",
+    "about-p2": "Nach einem Jahrzehnt in Teheran bin ich <strong>2025 nach Berlin</strong> gezogen und habe bei <strong>Bama Netz</strong> erste deutsche Berufserfahrung gesammelt — Installation von Glasfaser-Infrastruktur und Konfiguration von ONT-Geräten in Wohngebäuden.",
+    "sec-stack": "Tech-Stack", "sec-stack-h": "WERKZEUGE &<br><em>TECHNOLOGIEN</em>",
+    "sec-cap": "03 / Fähigkeiten", "sec-cap-h": "KERN<br><em>SYSTEME</em>",
+    "cap1-t": "Systeme & Administration",
+    "cap1-d": "Vollständige Lifecycle-Verwaltung von Windows Server-Umgebungen — Domain-Setup, täglicher Betrieb, Sicherheits-Hardening und Patch-Management.",
+    "cap2-t": "Virtualisierung",
+    "cap2-d": "Bereitstellung und Verwaltung von VMs in der Produktion. OVA/OVF-Templates, Snapshots und Leistungsoptimierung über vCenter-Flotten hinweg.",
+    "cap3-t": "Netzwerk",
+    "cap3-d": "TCP/IP-Stack, DNS/DHCP-Verwaltung und physische Infrastruktur — von Glasfaser-Verkabelung bis zur ONT-Installation in Wohnanlagen.",
+    "cap4-t": "Sicherheit & Zugriff",
+    "cap4-d": "Zugriffskontrolle über Active Directory, Firewall-Konfiguration, Remote-Access-Management und Antivirus-Deployment auf allen Endpunkten.",
+    "cap5-t": "IT-Support",
+    "cap5-d": "Endbenutzer-Support für 100+ Nutzer. Hardware-Troubleshooting, Vorfallbehebung und Software-Konfiguration auf Windows und macOS.",
+    "cap6-t": "Backup & Wiederherstellung",
+    "cap6-d": "Überwachung von Backup-Jobs, Durchführung von Restore-Operationen und Sicherstellung der Datenintegrität in Server- und Client-Umgebungen.",
+    "sec-exp": "Erfahrung", "sec-exp-h": "BERUFS<br><em>HISTORIE</em>",
+    "exp1-t": "Berufliche Weiterbildung", "exp1-co": "Eigenständig · Berlin",
+    "exp1-p1": "Deutsch B1 — auf dem Weg zu B2",
+    "exp1-p2": "Vertiefung in IT: Windows Server, Active Directory, Virtualisierung & Netzwerk",
+    "exp2-t": "Glasfaser-Techniker — IT-Infrastruktur",
+    "exp2-p1": "Verlegung von Glasfaserkabeln in Wohngebäuden",
+    "exp2-p2": "Konfiguration von ONT-Geräten in Wohneinheiten",
+    "exp2-p3": "Glasfaserzug durch Microducts; Unterstützung bei Gebäudeeinführungen",
+    "exp3-t": "IT-Support-Spezialist — Systeme & Anwendungen",
+    "exp3-p1": "Verwaltung von Windows Server-Umgebungen — stabiler und sicherer Betrieb",
+    "exp3-p2": "Active Directory-Administration: Provisionierung, Zugriffskontrolle, Gruppenrichtlinien",
+    "exp3-p3": "Bereitstellung und Verwaltung von VMs mit VMware vCenter in der Produktion",
+    "exp3-p4": "Überwachung von Backup/Restore zur Sicherstellung der Datenintegrität · 100+ Endnutzer",
+    "exp4-t": "IT-Support-Spezialist — Systeme & Infrastruktur",
+    "exp4-p1": "Remote-IT-Support und Systemüberwachung für Server und Clients",
+    "exp4-p2": "AD-Administration und Gruppenrichtlinien-Konfigurationen",
+    "exp4-p3": "Proaktive Serverüberwachung und Fehlerbehebung",
+    "exp5-t": "IT-Support-Techniker — Infrastruktur & Hardware",
+    "exp5-p1": "Backup-Operationen und Datensicherheit",
+    "exp5-p2": "Hardware-/Software-Support in Kundenumgebungen",
+    "exp5-p3": "Implementierung passiver Netzwerk-Infrastruktur",
+    "sec-proj": "Projekte", "sec-proj-h": "INFRA<br><em>GEBAUT</em>",
+    "proj1-d": "Design und Bereitstellung aktiver und passiver Netzwerk-Infrastruktur einschließlich kompletter strukturierter Verkabelung für eine 200-Personen-Organisation.",
+    "proj2-d": "Windows Server-Konfiguration, Domain-Setup und vollständige Active Directory-Bereitstellung in einer 80-Nutzer-Unternehmensumgebung.",
+    "proj3-d": "End-to-End-Netzwerk-Infrastrukturdesign mit aktiven und passiven Komponenten für ein wachsendes 25-Personen-Unternehmen.",
+    "proj4-d": "Komplettes kleines Netzwerk von Grund auf: Workgroup-Konfiguration, Datei-Sharing und volle Konnektivität für das gesamte Team.",
+    "appr-l": "Professioneller Ansatz",
+    "appr-h": 'SYSTEME, DIE LAUFEN<br><span class="sd">WÄHREND SIE SCHLAFEN</span>',
+    "appr-p": "Ich dokumentiere alles, überwache proaktiv und löse Probleme, bevor Nutzer sie bemerken. Infrastruktur sollte unsichtbar sein — ein Zeichen, dass sie genau wie geplant funktioniert.",
+    "ct-label": "Kontakt",
+    "ct-h": "LASS UNS<br><em>ARBEITEN.</em>",
+    "ct-sub": "Wohnhaft in Berlin. Auf der Suche nach IT-Support-Rollen. Vom ersten Tag an einsatzbereit.",
+    "foot": "IT-Support-Spezialist · Berlin, Deutschland"
+  }
+};
+
+function applyLang(lang) {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (I18N[lang] && I18N[lang][key]) {
+      el.innerHTML = I18N[lang][key];
+    }
+  });
+  document.querySelectorAll('#langPill button').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  try { localStorage.setItem('ar_lang', lang); } catch(e) {}
+}
+
+document.querySelectorAll('#langPill button').forEach(b => {
+  b.addEventListener('click', () => applyLang(b.dataset.lang));
+});
+
+// Restore saved language on load
+try {
+  const saved = localStorage.getItem('ar_lang');
+  if (saved && I18N[saved]) applyLang(saved);
+  else if (saved === 'fa') { applyLang('en'); localStorage.setItem('ar_lang', 'en'); }
+} catch(e) {}
+
+
 </script>
 </body>
 </html>
