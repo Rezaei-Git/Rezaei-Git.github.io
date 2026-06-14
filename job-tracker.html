@@ -250,6 +250,8 @@ body{
     </div>
   </div>
 
+  <div id="status-bar" style="display:none;margin-bottom:14px;padding:10px 14px;border-radius:8px;font-size:13px"></div>
+
   <!-- Stats -->
   <div class="stats">
     <div class="stat" onclick="filterByStatus('all')" id="stat-all">
@@ -452,42 +454,85 @@ body{
 </div>
 
 <script>
-const KEY = 'job_tracker_amir_v4';
+const SB_URL = 'https://hzykchkmisprfecgiegt.supabase.co';
+const SB_KEY = 'sb_publishable_MRcQvuYqNz4R7C6sKSGdSA_MWXb3Luu';
+const REST = SB_URL + '/rest/v1/jobs';
+const HEADERS = { apikey:SB_KEY, Authorization:'Bearer '+SB_KEY, 'Content-Type':'application/json' };
+
 let jobs = [];
 let filterStatus = 'all';
 let editingId = null;
 
 const SEED_DATA = [
-  { company:'Bitstore System- und Softwarehaus GmbH', position:'IT-Techniker / IT-Systemtechniker', source:'Other', date:'2026-06-10', status:'applied', salary:'', address:'10365 Berlin-Lichtenberg', link:'', notes:'Telefon: +49 30 4530878...' },
-  { company:'Elmatic', position:'Servicetechniker / Programmierer', source:'Indeed', date:'2026-05-25', status:'rejected', salary:'3,500', address:'', link:'', notes:'' },
+  { company:'Technec24', position:'IT Support', source:'Indeed', date:'2026-05-29', status:'interview', salary:'', address:'10247 Berlin-Friedrichshain', link:'https://scheduler.zoom.us/t/xvqmwr6o/introductory', notes:'' },
+  { company:'Bitstore System- und Softwarehaus GmbH', position:'IT-Techniker / IT-Systemtechniker', source:'Direct', date:'2026-06-10', status:'applied', salary:'', address:'10365 Berlin-Lichtenberg', link:'', notes:'Telefon: +49 30 4530878...' },
+  { company:'Elmatic', position:'Servicetechniker / Programmierer', source:'Indeed', date:'2026-05-25', status:'rejected', salary:'3,500', address:'12439 Berlin', link:'', notes:'' },
   { company:'Cyberport', position:'IT-Servicetechniker', source:'Indeed', date:'2026-05-22', status:'rejected', salary:'4,000 Euro per Monat', address:'10117 Berlin', link:'', notes:'' },
-  { company:'Leicht Digital GmbH', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-17', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
-  { company:'LYXN', position:'IT-Support-Spezialist', source:'Direct', date:'2026-05-16', status:'applied', salary:'37,000–40,000 EUR gross/year', address:'Charlottenstraße 68, 10117 Berlin', link:'', notes:'' },
-  { company:'wabcon', position:'IT-Techniker:in Microsoft WinServer2019', source:'', date:'2026-05-15', status:'rejected', salary:'50,000/year', address:'10557 Berlin', link:'', notes:'' },
-  { company:'GO InTech / IT-Service-Net', position:'IT-Servicetechniker - Schadensprüfungen', source:'', date:'2026-05-15', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
-  { company:'Sporttechnologie', position:'Technischer Allrounder Mechatronik', source:'', date:'2026-05-13', status:'offer', salary:'3,000', address:'Großbeeren, Märkische Allee', link:'', notes:'' },
-  { company:'IT-HAUS GmbH', position:'IT-Servicetechniker', source:'', date:'2026-05-11', status:'rejected', salary:'40,000', address:'12103 Berlin', link:'', notes:'' },
-  { company:'HörPartner GmbH', position:'IT-Systemadministrator / Fachinformatiker für Systemintegration', source:'', date:'2026-05-11', status:'applied', salary:'', address:'10318 Berlin', link:'', notes:'' },
-  { company:'Medialine EuroTrade AG', position:'IT-Supporttechniker', source:'', date:'2026-05-10', status:'rejected', salary:'', address:'12487 Berlin', link:'', notes:'' },
-  { company:'Karriereswift', position:'Helpdesk-/IT-Support-Spezialist', source:'', date:'2026-05-10', status:'applied', salary:'€4,000–4,400/month, full-time', address:'Berlin • Homeoffice/Remote', link:'', notes:'' },
-  { company:'ganss personal GmbH', position:'Neu IT-Techniker Onsite', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10557, Hauptbahnhof', link:'', notes:'' },
-  { company:'Fercon', position:'IT-Helpdesk', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10117, Unter den Linden', link:'', notes:'' },
-  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin/Treptow-Köpenick', link:'', notes:'' },
-  { company:'integrate-it Netzwerke GmbH', position:'Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'13355 Berlin', link:'', notes:'' },
-  { company:'360 Consulting GmbH', position:'Technischer Support für Privatpersonen', source:'', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
-  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
-  { company:'jemix GmbH', position:'Apple IT-Support-Spezialist (2nd Level)', source:'', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' }
+  { company:'Leicht Digital GmbH', position:'Fachinformatiker / Systemadministrator', source:'hokify', date:'2026-05-17', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
+  { company:'LYXN', position:'IT-Support-Spezialist', source:'Direct', date:'2026-05-16', status:'applied', salary:'37,000-40,000 EUR gross/year', address:'Charlottenstraße 68, 10117 Berlin', link:'', notes:'' },
+  { company:'wabcon', position:'IT-Techniker:in Microsoft WinServer2019', source:'Indeed', date:'2026-05-15', status:'rejected', salary:'50,000/year', address:'10557 Berlin', link:'', notes:'' },
+  { company:'GO InTech / IT-Service-Net', position:'IT-Servicetechniker - Schadensprüfungen', source:'hokify', date:'2026-05-15', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
+  { company:'Sporttechnologie', position:'Technischer Allrounder Mechatronik', source:'Direct', date:'2026-05-13', status:'offer', salary:'3,000', address:'Großbeeren, Märkische Allee', link:'', notes:'' },
+  { company:'IT-HAUS GmbH', position:'IT-Servicetechniker', source:'StepStone', date:'2026-05-11', status:'rejected', salary:'40,000', address:'12103 Berlin', link:'', notes:'' },
+  { company:'HörPartner GmbH', position:'IT-Systemadministrator / Fachinformatiker für Systemintegration', source:'Indeed', date:'2026-05-11', status:'applied', salary:'', address:'10318 Berlin', link:'', notes:'' },
+  { company:'Medialine EuroTrade AG', position:'IT-Supporttechniker', source:'Indeed', date:'2026-05-10', status:'rejected', salary:'', address:'12487 Berlin', link:'', notes:'' },
+  { company:'Karriereswift', position:'Helpdesk-/IT-Support-Spezialist', source:'Indeed', date:'2026-05-10', status:'applied', salary:'EUR4,000-4,400/month, full-time', address:'Berlin - Homeoffice/Remote', link:'', notes:'' },
+  { company:'ganss personal GmbH', position:'Neu IT-Techniker Onsite', source:'hokify', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10557, Hauptbahnhof', link:'', notes:'' },
+  { company:'Fercon', position:'IT-Helpdesk', source:'hokify', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10117, Unter den Linden', link:'', notes:'' },
+  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'hokify', date:'2026-05-08', status:'applied', salary:'', address:'Berlin/Treptow-Köpenick', link:'', notes:'' },
+  { company:'integrate-it Netzwerke GmbH', position:'Systemadministrator', source:'Indeed', date:'2026-05-08', status:'applied', salary:'', address:'13355 Berlin', link:'', notes:'' },
+  { company:'360 Consulting GmbH', position:'Technischer Support für Privatpersonen', source:'hokify', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
+  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'hokify', date:'2026-05-08', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
+  { company:'jemix GmbH', position:'Apple IT-Support-Spezialist (2nd Level)', source:'Indeed', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' }
 ];
 
-function load(){
-  try{ jobs = JSON.parse(localStorage.getItem(KEY)) || []; }
-  catch{ jobs = []; }
-  if(jobs.length === 0){
-    jobs = SEED_DATA.map(j => ({ ...j, id: uid(), created: Date.now() }));
-    save();
+function showStatus(msg, type){
+  const el = document.getElementById('status-bar');
+  if(!msg){ el.style.display='none'; return; }
+  const colors = {
+    error:'background:#fef2f2;color:#dc2626;border:1px solid #fecaca',
+    info:'background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe',
+    ok:'background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0'
+  };
+  el.style.cssText = 'margin-bottom:14px;padding:10px 14px;border-radius:8px;font-size:13px;' + (colors[type]||colors.info);
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+async function apiGet(){
+  const r = await fetch(REST + '?select=*', { headers: HEADERS });
+  if(!r.ok) throw new Error('Read failed (' + r.status + '): ' + await r.text());
+  return await r.json();
+}
+async function apiInsert(rows){
+  const r = await fetch(REST, { method:'POST', headers:{...HEADERS, Prefer:'return=minimal'}, body:JSON.stringify(rows) });
+  if(!r.ok) throw new Error('Insert failed (' + r.status + '): ' + await r.text());
+}
+async function apiUpdate(id, patch){
+  const r = await fetch(REST + '?id=eq.' + encodeURIComponent(id), { method:'PATCH', headers:{...HEADERS, Prefer:'return=minimal'}, body:JSON.stringify(patch) });
+  if(!r.ok) throw new Error('Update failed (' + r.status + '): ' + await r.text());
+}
+async function apiDelete(id){
+  const r = await fetch(REST + '?id=eq.' + encodeURIComponent(id), { method:'DELETE', headers:HEADERS });
+  if(!r.ok) throw new Error('Delete failed (' + r.status + '): ' + await r.text());
+}
+
+async function load(){
+  showStatus('Loading from database...', 'info');
+  try{
+    jobs = await apiGet();
+    if(jobs.length === 0){
+      showStatus('Setting up initial data...', 'info');
+      const seed = SEED_DATA.map(j => ({ ...j, id: uid(), created: Date.now() }));
+      await apiInsert(seed);
+      jobs = await apiGet();
+    }
+    showStatus('', null);
+  }catch(e){
+    jobs = [];
+    showStatus('Connection error: ' + e.message, 'error');
   }
 }
-function save(){ localStorage.setItem(KEY, JSON.stringify(jobs)); }
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
 
@@ -615,7 +660,7 @@ function clearForm(){
   document.getElementById('edit-id').value='';
 }
 
-function saveJob(){
+async function saveJob(){
   const company = document.getElementById('f-company').value.trim();
   const position = document.getElementById('f-position').value.trim();
   if(!company){ alert('Company name is required'); return; }
@@ -632,19 +677,29 @@ function saveJob(){
     notes: document.getElementById('f-notes').value.trim(),
     created: Date.now()
   };
-  jobs.unshift(job);
-  save();
-  cancelForm();
-  updateStats();
-  renderTable();
+  try{
+    await apiInsert([job]);
+    jobs.unshift(job);
+    cancelForm();
+    updateStats();
+    renderTable();
+    showStatus('', null);
+  }catch(e){
+    showStatus('Could not save: ' + e.message, 'error');
+  }
 }
 
-function deleteJob(id){
+async function deleteJob(id){
   if(!confirm('Delete this application?')) return;
-  jobs = jobs.filter(j=>j.id!==id);
-  save();
-  updateStats();
-  renderTable();
+  try{
+    await apiDelete(id);
+    jobs = jobs.filter(j=>j.id!==id);
+    updateStats();
+    renderTable();
+    showStatus('', null);
+  }catch(e){
+    showStatus('Could not delete: ' + e.message, 'error');
+  }
 }
 
 function openEdit(id){
@@ -672,14 +727,13 @@ function closeModalOutside(e){
   if(e.target===document.getElementById('modal-overlay')) closeModal();
 }
 
-function saveEdit(){
+async function saveEdit(){
   if(!editingId) return;
   const idx = jobs.findIndex(j=>j.id===editingId);
   if(idx===-1) return;
   const company = document.getElementById('m-company').value.trim();
   if(!company){ alert('Company name is required'); return; }
-  jobs[idx] = {
-    ...jobs[idx],
+  const patch = {
     company,
     position: document.getElementById('m-position').value.trim(),
     source: document.getElementById('m-source').value,
@@ -690,10 +744,16 @@ function saveEdit(){
     address: document.getElementById('m-address').value.trim(),
     notes: document.getElementById('m-notes').value.trim(),
   };
-  save();
-  closeModal();
-  updateStats();
-  renderTable();
+  try{
+    await apiUpdate(editingId, patch);
+    jobs[idx] = { ...jobs[idx], ...patch };
+    closeModal();
+    updateStats();
+    renderTable();
+    showStatus('', null);
+  }catch(e){
+    showStatus('Could not update: ' + e.message, 'error');
+  }
 }
 
 function exportExcel(){
@@ -841,9 +901,11 @@ function exportPDF(){
 }
 
 // Init
-load();
-filterByStatus('all');
 document.getElementById('stat-all').classList.add('active');
+(async function(){
+  await load();
+  filterByStatus('all');
+})();
 </script>
 </body>
 </html>
