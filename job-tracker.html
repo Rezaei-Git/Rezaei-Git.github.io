@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application Tracker | Amir</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0ede8;
+  --card:#fff;
+  --border:#e2ddd6;
+  --text:#1a1a1a;
+  --text2:#666;
+  --text3:#999;
+  --accent:#2563eb;
+  --accent-light:#eff6ff;
+  --green:#16a34a;
+  --green-bg:#f0fdf4;
+  --yellow:#d97706;
+  --yellow-bg:#fffbeb;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --purple:#7c3aed;
+  --purple-bg:#f5f3ff;
+  --gray:#6b7280;
+  --gray-bg:#f9fafb;
+  --radius:10px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+
+body{
+  font-family:'Vazirmatn',Tahoma,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding:24px 16px;
+}
+
+.container{max-width:1200px;margin:0 auto}
+
+/* Header */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.logo{font-size:20px;font-weight:700;color:var(--text)}
+.logo span{color:var(--accent)}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;
+  border:none;cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn-outline:hover{background:var(--bg)}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #fecaca}
+.btn-danger:hover{background:#fee2e2}
+.btn-sm{padding:5px 10px;font-size:12px}
+
+/* Stats */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+@media(max-width:768px){.stats{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+.stat{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .15s;
+}
+.stat:hover{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-light)}
+.stat.active{border-color:var(--accent);background:var(--accent-light)}
+.stat-num{font-size:22px;font-weight:700;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text2);margin-top:4px}
+
+/* Controls */
+.controls{
+  display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;
+}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap input{
+  width:100%;padding:9px 36px 9px 12px;
+  border:1px solid var(--border);border-radius:8px;
+  font-family:inherit;font-size:13px;background:#fff;color:var(--text);
+  outline:none;transition:border-color .15s;
+}
+.search-wrap input:focus{border-color:var(--accent)}
+.search-icon{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  color:var(--text3);font-size:15px;pointer-events:none;
+}
+.select-field{
+  padding:9px 12px;border:1px solid var(--border);border-radius:8px;
+  font-family:inherit;font-size:13px;background:#fff;color:var(--text);
+  outline:none;cursor:pointer;
+}
+
+/* Add Form */
+.form-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:20px;
+  display:none;box-shadow:var(--shadow);
+}
+.form-card.open{display:block}
+.form-title{font-size:15px;font-weight:600;margin-bottom:16px;color:var(--text)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:600px){.form-grid,.form-grid.three{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;font-weight:500;color:var(--text2)}
+.field input,.field select,.field textarea{
+  padding:8px 10px;border:1px solid var(--border);border-radius:8px;
+  font-family:inherit;font-size:13px;background:#fff;color:var(--text);
+  outline:none;transition:border-color .15s;width:100%;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:70px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+
+/* Table */
+.table-wrap{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+.table-header{
+  display:grid;
+  grid-template-columns:1.8fr 1.4fr 1.3fr 0.9fr 0.9fr 1.2fr 110px;
+  gap:0;
+  padding:10px 16px;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  font-size:12px;font-weight:600;color:var(--text2);
+}
+.row{
+  display:grid;
+  grid-template-columns:1.8fr 1.4fr 1.3fr 0.9fr 0.9fr 1.2fr 110px;
+  gap:0;
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  align-items:center;
+  transition:background .1s;
+}
+.row:last-child{border-bottom:none}
+.row:hover{background:#fafaf8}
+.col{padding:0 6px;font-size:13px}
+.col:first-child{padding-left:0}
+.col-company{font-weight:600;color:var(--text)}
+.col-company .position{font-weight:400;color:var(--text2);font-size:12px;margin-top:2px}
+.col-company a{color:var(--accent);text-decoration:none;font-size:11px}
+.col-company a:hover{text-decoration:underline}
+.col-date{color:var(--text2);font-size:12px}
+.col-address{color:var(--text2);font-size:12px}
+.col-actions{display:flex;gap:6px;justify-content:flex-end}
+
+/* Status badges */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;
+}
+.badge-pending{background:#f3f4f6;color:#374151}
+.badge-applied{background:var(--accent-light);color:var(--accent)}
+.badge-interview{background:var(--yellow-bg);color:var(--yellow)}
+.badge-offer{background:var(--green-bg);color:var(--green)}
+.badge-rejected{background:var(--red-bg);color:var(--red)}
+.badge-withdrawn{background:var(--gray-bg);color:var(--gray)}
+
+/* Icon buttons */
+.icon-btn{
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;border:1px solid var(--border);background:#fff;
+  cursor:pointer;font-size:14px;transition:all .15s;color:var(--text2);
+}
+.icon-btn:hover{background:var(--bg);color:var(--text)}
+.icon-btn.del:hover{background:var(--red-bg);color:var(--red);border-color:#fecaca}
+
+/* Empty state */
+.empty{
+  padding:60px 20px;text-align:center;color:var(--text2);
+}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:.4}
+.empty-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px}
+
+/* Modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.4);
+  display:none;align-items:center;justify-content:center;
+  z-index:1000;padding:16px;
+}
+.modal-overlay.open{display:flex}
+.modal{
+  background:#fff;border-radius:14px;padding:24px;
+  width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,0.2);
+}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-title{font-size:16px;font-weight:600}
+.close-btn{
+  width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+  border-radius:6px;border:none;background:var(--bg);cursor:pointer;font-size:16px;
+}
+
+/* Print area (hidden on screen, shown only when printing) */
+#print-area{display:none}
+@media print{
+  body > .container, body > .modal-overlay{display:none !important}
+  #print-area{display:block !important}
+  @page{size:A4 landscape;margin:14mm}
+  #print-area *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #print-area table{width:100%;border-collapse:collapse;font-size:9px}
+  #print-area th{background:#2563eb !important;color:#fff !important;padding:6px;text-align:left;border:1px solid #1d4ed8}
+  #print-area td{padding:5px 6px;border:1px solid #ddd;vertical-align:top}
+  #print-area tr:nth-child(even) td{background:#f5f3f0 !important}
+  #print-area h1{font-size:16px;margin-bottom:4px}
+  #print-area .meta{font-size:10px;color:#666;margin-bottom:10px}
+  .st-offer{color:#16a34a !important;font-weight:bold}
+  .st-rejected{color:#dc2626 !important;font-weight:bold}
+  .st-interview{color:#d97706 !important;font-weight:bold}
+  .st-applied{color:#2563eb !important;font-weight:bold}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">Job Application <span>Tracker</span></div>
+    <div class="header-actions">
+      <button class="btn btn-outline btn-sm" onclick="exportExcel()">📥 Export CSV (Excel)</button>
+      <button class="btn btn-outline btn-sm" onclick="exportPDF()">📄 Export PDF</button>
+      <button class="btn btn-primary" onclick="toggleForm()">＋ Add Application</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat" onclick="filterByStatus('all')" id="stat-all">
+      <div class="stat-num" id="count-all">0</div>
+      <div class="stat-label">All</div>
+    </div>
+    <div class="stat" onclick="filterByStatus('applied')" id="stat-applied">
+      <div class="stat-num" id="count-applied">0</div>
+      <div class="stat-label">Applied</div>
+    </div>
+    <div class="stat" onclick="filterByStatus('interview')" id="stat-interview">
+      <div class="stat-num" id="count-interview">0</div>
+      <div class="stat-label">Interview</div>
+    </div>
+    <div class="stat" onclick="filterByStatus('offer')" id="stat-offer">
+      <div class="stat-num" id="count-offer">0</div>
+      <div class="stat-label">Offer</div>
+    </div>
+    <div class="stat" onclick="filterByStatus('rejected')" id="stat-rejected">
+      <div class="stat-num" id="count-rejected">0</div>
+      <div class="stat-label">Rejected</div>
+    </div>
+    <div class="stat" onclick="filterByStatus('pending')" id="stat-pending">
+      <div class="stat-num" id="count-pending">0</div>
+      <div class="stat-label">Pending</div>
+    </div>
+  </div>
+
+  <!-- Add/Edit Form -->
+  <div class="form-card" id="form-card">
+    <div class="form-title" id="form-title">➕ New Application</div>
+    <input type="hidden" id="edit-id">
+    <div class="form-grid">
+      <div class="field">
+        <label>Company *</label>
+        <input type="text" id="f-company" placeholder="e.g. Sportstech Brands">
+      </div>
+      <div class="field">
+        <label>Position *</label>
+        <input type="text" id="f-position" placeholder="e.g. IT Support Specialist">
+      </div>
+    </div>
+    <div class="form-grid three">
+      <div class="field">
+        <label>Source</label>
+        <select id="f-source">
+          <option value="">Select</option>
+          <option>Indeed</option>
+          <option>LinkedIn</option>
+          <option>hokify</option>
+          <option>StepStone</option>
+          <option>Xing</option>
+          <option>Direct</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date Applied</label>
+        <input type="date" id="f-date">
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="f-status">
+          <option value="pending">Pending</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+          <option value="withdrawn">Withdrawn</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Salary (€)</label>
+        <input type="text" id="f-salary" placeholder="e.g. 3200-3500 / month">
+      </div>
+      <div class="field">
+        <label>Job Link</label>
+        <input type="url" id="f-link" placeholder="https://...">
+      </div>
+    </div>
+    <div class="field">
+      <label>Address / Location</label>
+      <input type="text" id="f-address" placeholder="e.g. Charlottenstraße 68, 10117 Berlin">
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>Notes</label>
+      <textarea id="f-notes" placeholder="Anything important..."></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="cancelForm()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveJob()">💾 Save</button>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Search company, position, address..." oninput="renderTable()">
+    </div>
+    <select class="select-field" id="sort-select" onchange="renderTable()">
+      <option value="date-desc">Newest first</option>
+      <option value="date-asc">Oldest first</option>
+      <option value="company">Company name</option>
+      <option value="status">Status</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="col">Company / Position</div>
+      <div class="col">Source / Salary</div>
+      <div class="col">Address / Location</div>
+      <div class="col">Date</div>
+      <div class="col">Status</div>
+      <div class="col">Notes</div>
+      <div class="col"></div>
+    </div>
+    <div id="table-body"></div>
+  </div>
+
+</div>
+
+<!-- Print area for PDF export -->
+<div id="print-area"></div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Edit Application</div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Company *</label>
+        <input type="text" id="m-company">
+      </div>
+      <div class="field">
+        <label>Position *</label>
+        <input type="text" id="m-position">
+      </div>
+    </div>
+    <div class="form-grid three">
+      <div class="field">
+        <label>Source</label>
+        <select id="m-source">
+          <option value="">Select</option>
+          <option>Indeed</option>
+          <option>LinkedIn</option>
+          <option>hokify</option>
+          <option>StepStone</option>
+          <option>Xing</option>
+          <option>Direct</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date Applied</label>
+        <input type="date" id="m-date">
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="m-status">
+          <option value="pending">Pending</option>
+          <option value="applied">Applied</option>
+          <option value="interview">Interview</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+          <option value="withdrawn">Withdrawn</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Salary (€)</label>
+        <input type="text" id="m-salary">
+      </div>
+      <div class="field">
+        <label>Job Link</label>
+        <input type="url" id="m-link">
+      </div>
+    </div>
+    <div class="field">
+      <label>Address / Location</label>
+      <input type="text" id="m-address">
+    </div>
+    <div class="field" style="margin-top:10px">
+      <label>Notes</label>
+      <textarea id="m-notes"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">💾 Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const KEY = 'job_tracker_amir_v4';
+let jobs = [];
+let filterStatus = 'all';
+let editingId = null;
+
+const SEED_DATA = [
+  { company:'Bitstore System- und Softwarehaus GmbH', position:'IT-Techniker / IT-Systemtechniker', source:'Other', date:'2026-06-10', status:'applied', salary:'', address:'10365 Berlin-Lichtenberg', link:'', notes:'Telefon: +49 30 4530878...' },
+  { company:'Elmatic', position:'Servicetechniker / Programmierer', source:'Indeed', date:'2026-05-25', status:'rejected', salary:'3,500', address:'', link:'', notes:'' },
+  { company:'Cyberport', position:'IT-Servicetechniker', source:'Indeed', date:'2026-05-22', status:'rejected', salary:'4,000 Euro per Monat', address:'10117 Berlin', link:'', notes:'' },
+  { company:'Leicht Digital GmbH', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-17', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
+  { company:'LYXN', position:'IT-Support-Spezialist', source:'Direct', date:'2026-05-16', status:'applied', salary:'37,000–40,000 EUR gross/year', address:'Charlottenstraße 68, 10117 Berlin', link:'', notes:'' },
+  { company:'wabcon', position:'IT-Techniker:in Microsoft WinServer2019', source:'', date:'2026-05-15', status:'rejected', salary:'50,000/year', address:'10557 Berlin', link:'', notes:'' },
+  { company:'GO InTech / IT-Service-Net', position:'IT-Servicetechniker - Schadensprüfungen', source:'', date:'2026-05-15', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
+  { company:'Sporttechnologie', position:'Technischer Allrounder Mechatronik', source:'', date:'2026-05-13', status:'offer', salary:'3,000', address:'Großbeeren, Märkische Allee', link:'', notes:'' },
+  { company:'IT-HAUS GmbH', position:'IT-Servicetechniker', source:'', date:'2026-05-11', status:'rejected', salary:'40,000', address:'12103 Berlin', link:'', notes:'' },
+  { company:'HörPartner GmbH', position:'IT-Systemadministrator / Fachinformatiker für Systemintegration', source:'', date:'2026-05-11', status:'applied', salary:'', address:'10318 Berlin', link:'', notes:'' },
+  { company:'Medialine EuroTrade AG', position:'IT-Supporttechniker', source:'', date:'2026-05-10', status:'rejected', salary:'', address:'12487 Berlin', link:'', notes:'' },
+  { company:'Karriereswift', position:'Helpdesk-/IT-Support-Spezialist', source:'', date:'2026-05-10', status:'applied', salary:'€4,000–4,400/month, full-time', address:'Berlin • Homeoffice/Remote', link:'', notes:'' },
+  { company:'ganss personal GmbH', position:'Neu IT-Techniker Onsite', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10557, Hauptbahnhof', link:'', notes:'' },
+  { company:'Fercon', position:'IT-Helpdesk', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin 10117, Unter den Linden', link:'', notes:'' },
+  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'Berlin/Treptow-Köpenick', link:'', notes:'' },
+  { company:'integrate-it Netzwerke GmbH', position:'Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'13355 Berlin', link:'', notes:'' },
+  { company:'360 Consulting GmbH', position:'Technischer Support für Privatpersonen', source:'', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' },
+  { company:'BENUS IT-Service AG', position:'Fachinformatiker / Systemadministrator', source:'', date:'2026-05-08', status:'applied', salary:'', address:'12489 Berlin', link:'', notes:'' },
+  { company:'jemix GmbH', position:'Apple IT-Support-Spezialist (2nd Level)', source:'', date:'2026-05-08', status:'applied', salary:'', address:'10557 Berlin', link:'', notes:'' }
+];
+
+function load(){
+  try{ jobs = JSON.parse(localStorage.getItem(KEY)) || []; }
+  catch{ jobs = []; }
+  if(jobs.length === 0){
+    jobs = SEED_DATA.map(j => ({ ...j, id: uid(), created: Date.now() }));
+    save();
+  }
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(jobs)); }
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+const STATUS_LABEL = {
+  pending:'Pending', applied:'Applied', interview:'Interview',
+  offer:'Offer', rejected:'Rejected', withdrawn:'Withdrawn'
+};
+const STATUS_CLASS = {
+  pending:'badge-pending', applied:'badge-applied', interview:'badge-interview',
+  offer:'badge-offer', rejected:'badge-rejected', withdrawn:'badge-withdrawn'
+};
+
+function filterByStatus(s){
+  filterStatus = s;
+  document.querySelectorAll('.stat').forEach(el=>el.classList.remove('active'));
+  document.getElementById('stat-'+s)?.classList.add('active');
+  renderTable();
+}
+
+function updateStats(){
+  const all = jobs.length;
+  document.getElementById('count-all').textContent = all;
+  ['applied','interview','offer','rejected','pending'].forEach(s=>{
+    document.getElementById('count-'+s).textContent = jobs.filter(j=>j.status===s).length;
+  });
+}
+
+function formatDate(d){
+  if(!d) return '—';
+  const dt = new Date(d + 'T00:00:00');
+  if(isNaN(dt.getTime())) return d;
+  const dd = String(dt.getDate()).padStart(2,'0');
+  const mm = String(dt.getMonth()+1).padStart(2,'0');
+  const yyyy = dt.getFullYear();
+  return `${dd}.${mm}.${yyyy}`;
+}
+
+function renderTable(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const sort = document.getElementById('sort-select').value;
+
+  let list = [...jobs];
+  if(filterStatus !== 'all') list = list.filter(j=>j.status===filterStatus);
+  if(q) list = list.filter(j=>
+    j.company?.toLowerCase().includes(q) ||
+    j.position?.toLowerCase().includes(q) ||
+    j.address?.toLowerCase().includes(q) ||
+    j.notes?.toLowerCase().includes(q)
+  );
+
+  list.sort((a,b)=>{
+    if(sort==='date-desc') return (b.date||'') > (a.date||'') ? 1 : -1;
+    if(sort==='date-asc') return (a.date||'') > (b.date||'') ? 1 : -1;
+    if(sort==='company') return (a.company||'').localeCompare(b.company||'');
+    if(sort==='status') return (a.status||'').localeCompare(b.status||'');
+    return 0;
+  });
+
+  const body = document.getElementById('table-body');
+  if(!list.length){
+    body.innerHTML = `<div class="empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-title">${jobs.length===0 ? 'No applications yet' : 'No results found'}</div>
+      <div>${jobs.length===0 ? 'Add your first application!' : 'Try changing the filter or search'}</div>
+    </div>`;
+    return;
+  }
+
+  body.innerHTML = list.map(j=>`
+    <div class="row">
+      <div class="col col-company" data-label="Company">
+        <div>${escHtml(j.company||'—')}</div>
+        <div class="position">${escHtml(j.position||'')}</div>
+        ${j.link ? `<a href="${escHtml(j.link)}" target="_blank">🔗 Job ad</a>` : ''}
+      </div>
+      <div class="col" data-label="Source">
+        <div>${escHtml(j.source||'—')}</div>
+        ${j.salary ? `<div style="font-size:11px;color:var(--text2)">${escHtml(j.salary)}</div>` : ''}
+      </div>
+      <div class="col col-address" data-label="Address">${escHtml(j.address||'—')}</div>
+      <div class="col col-date" data-label="Date">${formatDate(j.date)}</div>
+      <div class="col" data-label="Status">
+        <span class="badge ${STATUS_CLASS[j.status]||'badge-pending'}">${STATUS_LABEL[j.status]||j.status}</span>
+      </div>
+      <div class="col" data-label="Notes" style="font-size:12px;color:var(--text2);max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+        ${j.notes ? escHtml(j.notes.substring(0,60))+(j.notes.length>60?'...':'') : '—'}
+      </div>
+      <div class="col col-actions">
+        <button class="icon-btn" onclick="openEdit('${j.id}')" title="Edit">✏️</button>
+        <button class="icon-btn del" onclick="deleteJob('${j.id}')" title="Delete">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+
+  updateStats();
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toggleForm(){
+  const fc = document.getElementById('form-card');
+  fc.classList.toggle('open');
+  if(fc.classList.contains('open')){
+    document.getElementById('form-title').textContent = '➕ New Application';
+    document.getElementById('edit-id').value = '';
+    clearForm();
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('f-company').focus();
+  }
+}
+
+function cancelForm(){
+  document.getElementById('form-card').classList.remove('open');
+  clearForm();
+}
+
+function clearForm(){
+  ['f-company','f-position','f-date','f-salary','f-link','f-address','f-notes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('f-source').value='';
+  document.getElementById('f-status').value='pending';
+  document.getElementById('edit-id').value='';
+}
+
+function saveJob(){
+  const company = document.getElementById('f-company').value.trim();
+  const position = document.getElementById('f-position').value.trim();
+  if(!company){ alert('Company name is required'); return; }
+
+  const job = {
+    id: uid(),
+    company, position,
+    source: document.getElementById('f-source').value,
+    date: document.getElementById('f-date').value,
+    status: document.getElementById('f-status').value,
+    salary: document.getElementById('f-salary').value.trim(),
+    link: document.getElementById('f-link').value.trim(),
+    address: document.getElementById('f-address').value.trim(),
+    notes: document.getElementById('f-notes').value.trim(),
+    created: Date.now()
+  };
+  jobs.unshift(job);
+  save();
+  cancelForm();
+  updateStats();
+  renderTable();
+}
+
+function deleteJob(id){
+  if(!confirm('Delete this application?')) return;
+  jobs = jobs.filter(j=>j.id!==id);
+  save();
+  updateStats();
+  renderTable();
+}
+
+function openEdit(id){
+  const j = jobs.find(x=>x.id===id);
+  if(!j) return;
+  editingId = id;
+  document.getElementById('m-company').value = j.company||'';
+  document.getElementById('m-position').value = j.position||'';
+  document.getElementById('m-source').value = j.source||'';
+  document.getElementById('m-date').value = j.date||'';
+  document.getElementById('m-status').value = j.status||'pending';
+  document.getElementById('m-salary').value = j.salary||'';
+  document.getElementById('m-link').value = j.link||'';
+  document.getElementById('m-address').value = j.address||'';
+  document.getElementById('m-notes').value = j.notes||'';
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function closeModalOutside(e){
+  if(e.target===document.getElementById('modal-overlay')) closeModal();
+}
+
+function saveEdit(){
+  if(!editingId) return;
+  const idx = jobs.findIndex(j=>j.id===editingId);
+  if(idx===-1) return;
+  const company = document.getElementById('m-company').value.trim();
+  if(!company){ alert('Company name is required'); return; }
+  jobs[idx] = {
+    ...jobs[idx],
+    company,
+    position: document.getElementById('m-position').value.trim(),
+    source: document.getElementById('m-source').value,
+    date: document.getElementById('m-date').value,
+    status: document.getElementById('m-status').value,
+    salary: document.getElementById('m-salary').value.trim(),
+    link: document.getElementById('m-link').value.trim(),
+    address: document.getElementById('m-address').value.trim(),
+    notes: document.getElementById('m-notes').value.trim(),
+  };
+  save();
+  closeModal();
+  updateStats();
+  renderTable();
+}
+
+function exportExcel(){
+  if(!jobs.length){ alert('No data to export'); return; }
+  const SEP = ';';
+  const esc = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
+  const headers = ['Company','Position','Source','Date','Status','Salary','Address','Link','Notes'];
+  const rows = jobs.map(j=>[
+    j.company||'', j.position||'', j.source||'',
+    formatDate(j.date), STATUS_LABEL[j.status]||j.status||'',
+    j.salary||'', j.address||'', j.link||'', j.notes||''
+  ].map(esc).join(SEP));
+  const csv = '\uFEFF' + 'sep=' + SEP + '\r\n' + [headers.map(esc).join(SEP), ...rows].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download = 'job-tracker-' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+function exportPDF(){
+  if(!jobs.length){ alert('No data to export'); return; }
+
+  const PAGE_W=842, PAGE_H=595, MARGIN=40;
+  const FS=8, LH=10, PAD=3;
+  const cols=[
+    {h:'Company', w:108, k:j=>j.company},
+    {h:'Position', w:150, k:j=>j.position},
+    {h:'Source', w:52, k:j=>j.source},
+    {h:'Date', w:60, k:j=>formatDate(j.date)},
+    {h:'Status', w:56, k:j=>STATUS_LABEL[j.status]||j.status||''},
+    {h:'Salary', w:96, k:j=>j.salary},
+    {h:'Address', w:120, k:j=>j.address},
+    {h:'Notes', w:120, k:j=>j.notes},
+  ];
+  const statusColor={
+    'Offer':[0.086,0.639,0.290],'Rejected':[0.863,0.149,0.149],
+    'Interview':[0.851,0.467,0.024],'Applied':[0.145,0.388,0.922]
+  };
+
+  function san(t){
+    return String(t==null?'':t)
+      .replace(/[\u2010-\u2015]/g,'-').replace(/\u2022/g,'-')
+      .replace(/\u20AC/g,'EUR').replace(/[\u2018\u2019]/g,"'")
+      .replace(/[\u201C\u201D]/g,'"')
+      .split('').map(c=>c.charCodeAt(0)>255?'?':c).join('');
+  }
+  function esc(t){ return san(t).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)'); }
+  function wrap(text, maxW){
+    text=san(text); if(!text) return [''];
+    const cw=FS*0.5, maxChars=Math.max(1,Math.floor((maxW-2*PAD)/cw));
+    const words=text.split(/\s+/), lines=[]; let cur='';
+    for(let w of words){
+      while(w.length>maxChars){ if(cur){lines.push(cur);cur='';} lines.push(w.slice(0,maxChars)); w=w.slice(maxChars); }
+      if(!cur) cur=w;
+      else if((cur+' '+w).length<=maxChars) cur+=' '+w;
+      else { lines.push(cur); cur=w; }
+    }
+    if(cur) lines.push(cur);
+    return lines.length?lines:[''];
+  }
+
+  const pages=[]; let cs=''; let y=0;
+  function colX(i){ let x=MARGIN; for(let c=0;c<i;c++) x+=cols[c].w; return x; }
+
+  function drawHeaderRow(){
+    const h=LH+2*PAD;
+    cs+=`0.145 0.388 0.922 rg\n${MARGIN} ${y-h} ${PAGE_W-2*MARGIN} ${h} re f\n`;
+    cs+=`0.85 0.85 0.85 RG\n`;
+    cs+=`1 1 1 rg\nBT /F2 ${FS} Tf\n`;
+    cols.forEach((c,i)=>{ cs+=`1 0 0 1 ${colX(i)+PAD} ${y-PAD-FS+1} Tm (${esc(c.h)}) Tj\n`; });
+    cs+=`ET\n`;
+    cols.forEach((c,i)=>{ cs+=`${colX(i)} ${y-h} ${c.w} ${h} re S\n`; });
+    y-=h;
+  }
+  function newPage(first){
+    if(cs) pages.push(cs);
+    cs=''; y=PAGE_H-MARGIN;
+    if(first){
+      cs+=`0.1 0.1 0.1 rg\nBT /F2 14 Tf 1 0 0 1 ${MARGIN} ${y-12} Tm (Job Application Tracker) Tj ET\n`;
+      cs+=`0.4 0.4 0.4 rg\nBT /F1 9 Tf 1 0 0 1 ${MARGIN} ${y-26} Tm (${esc('Exported: '+new Date().toLocaleDateString('en-GB')+'  -  Total: '+jobs.length)}) Tj ET\n`;
+      y-=40;
+    }
+    drawHeaderRow();
+  }
+
+  newPage(true);
+  jobs.forEach((j,ri)=>{
+    const cellLines=cols.map(c=>wrap(c.k(j), c.w));
+    const maxL=Math.max(...cellLines.map(l=>l.length));
+    const h=maxL*LH+2*PAD;
+    if(y-h<MARGIN) newPage(false);
+    if(ri%2===1){ cs+=`0.961 0.953 0.941 rg\n${MARGIN} ${y-h} ${PAGE_W-2*MARGIN} ${h} re f\n`; }
+    cs+=`0.85 0.85 0.85 RG\n`;
+    cols.forEach((c,i)=>{ cs+=`${colX(i)} ${y-h} ${c.w} ${h} re S\n`; });
+    cols.forEach((c,i)=>{
+      const sc=(i===4)?(statusColor[cellLines[i][0]]||[0.1,0.1,0.1]):[0.1,0.1,0.1];
+      const fnt=(i===4)?'F2':'F1';
+      cs+=`${sc[0]} ${sc[1]} ${sc[2]} rg\nBT /${fnt} ${FS} Tf\n`;
+      cellLines[i].forEach((ln,li)=>{
+        cs+=`1 0 0 1 ${colX(i)+PAD} ${y-PAD-FS-li*LH+1} Tm (${esc(ln)}) Tj\n`;
+      });
+      cs+=`ET\n`;
+    });
+    y-=h;
+  });
+  pages.push(cs);
+
+  // Assemble PDF
+  const nPages=pages.length;
+  const objs=[];
+  objs[1]='<< /Type /Catalog /Pages 2 0 R >>';
+  const kids=[]; for(let i=0;i<nPages;i++) kids.push((5+i*2)+' 0 R');
+  objs[2]=`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${nPages} >>`;
+  objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+  objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+  for(let i=0;i<nPages;i++){
+    const pageNum=5+i*2, contentNum=6+i*2;
+    objs[pageNum]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PAGE_W} ${PAGE_H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentNum} 0 R >>`;
+    const stream=pages[i];
+    objs[contentNum]=`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+  }
+
+  let pdf='%PDF-1.4\n';
+  const offsets=[]; 
+  for(let i=1;i<objs.length;i++){
+    offsets[i]=pdf.length;
+    pdf+=`${i} 0 obj\n${objs[i]}\nendobj\n`;
+  }
+  const xrefPos=pdf.length;
+  const count=objs.length;
+  pdf+=`xref\n0 ${count}\n0000000000 65535 f \n`;
+  for(let i=1;i<count;i++){
+    pdf+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';
+  }
+  pdf+=`trailer\n<< /Size ${count} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+
+  const bytes=new Uint8Array(pdf.length);
+  for(let i=0;i<pdf.length;i++) bytes[i]=pdf.charCodeAt(i)&0xFF;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+  a.download='job-tracker-'+new Date().toISOString().split('T')[0]+'.pdf';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+
+// Init
+load();
+filterByStatus('all');
+document.getElementById('stat-all').classList.add('active');
+</script>
+</body>
+</html>
