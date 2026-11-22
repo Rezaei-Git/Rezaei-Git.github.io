@@ -1802,6 +1802,9 @@
     animation:neFill var(--ne-dwell,5500ms) linear forwards; }
   #nvEdit .ne-dots.ap.hold button.on::after{ animation-play-state:paused; }
   @keyframes neFill{ from{ transform:scaleX(0) } to{ transform:scaleX(1) } }
+
+  /* empty cells at the end of a grid row match the page, not the line colour */
+  .grid > .gfill{ background:var(--black); pointer-events:none; }
 </style>
   <style>
     /* Content-protection layer: deters casual right-click save / drag / selection copying. */
@@ -4315,10 +4318,32 @@ if(sortKey==='pa') r.sort(function(a,b){ return a.p-b.p; });
      and fall back to memory where it doesn't (the app preview, private mode). */
   var NVK={ w:'nuveer.wish.v1', b:'nuveer.bag.v1' };
   function nvLoad(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
-  function nvSave(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  function nvSave(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} nvAcctMirror(k,v); }
   (function(){ var w=nvLoad(NVK.w,{}); for(var k in w){ if(w[k]) wish[k]=true; } })();
   function nvSaveWish(){ var o={}; for(var k in wish){ if(wish[k]) o[k]=true; } nvSave(NVK.w,o); }
   var bag=nvLoad(NVK.b,[]); if(!Array.isArray(bag)) bag=[];
+/* ---------- account: saved frames and bag stay with the account ----------
+   Signed in: every change is also written to the account's own store on this device.
+   Sign-in: the account's frames and bag come back, merged with anything added as a guest.
+   Sign-out: the account keeps them; the page shows an empty guest list until the next sign-in.
+   Nothing is ever dropped unless the visitor removes it. */
+var NV_ACCT_PRE='nuveer.acct.v1.';
+function nvAcctEmail(){ try{ var a=JSON.parse(localStorage.getItem('nuveer.auth.demo.v1')||'null'); return (a && a.email) ? String(a.email).trim().toLowerCase() : ''; }catch(e){ return ''; } }
+function nvAcctMirror(k,v){ if(k!==NVK.w && k!==NVK.b) return; var em=nvAcctEmail(); if(!em) return;
+  try{ var key=NV_ACCT_PRE+em, s=JSON.parse(localStorage.getItem(key)||'{}')||{}; s[k===NVK.w?'w':'b']=v; s.t=Date.now(); localStorage.setItem(key, JSON.stringify(s)); }catch(e){} }
+function nvAcctRefresh(){ try{ render(); }catch(e){} try{ renderWish(); }catch(e){} try{ renderBag(); }catch(e){} try{ syncBadges(); }catch(e){}
+  try{ window.dispatchEvent(new Event('storage')); }catch(e){} }
+window.nvShopAccount=function(what){
+  var em=nvAcctEmail();
+  if(what==='out'){ for(var k in wish) wish[k]=false; bag.length=0; nvSave(NVK.w,{}); nvSave(NVK.b,[]); nvAcctRefresh(); return; }
+  if(!em) return;
+  var s={}; try{ s=JSON.parse(localStorage.getItem(NV_ACCT_PRE+em)||'{}')||{}; }catch(e){}
+  var w=s.w||{}; for(var k2 in w){ if(w[k2]) wish[k2]=true; }
+  (Array.isArray(s.b)?s.b:[]).forEach(function(x){
+    for(var i=0;i<bag.length;i++){ if(bag[i].b===x.b && bag[i].n===x.n && bag[i].c===x.c){ bag[i].q=Math.max(bag[i].q||1, x.q||1); return; } }
+    bag.push(x); });
+  nvSaveWish(); nvSave(NVK.b,bag); nvAcctRefresh();
+};
 
   var SHOP=document.getElementById('shopView');
   var wishGrid=document.getElementById('wishGrid'), wishSub=document.getElementById('wishSub');
@@ -5224,7 +5249,7 @@ if(sortKey==='pa') r.sort(function(a,b){ return a.p-b.p; });
       if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(d.url).then(done,function(){ okMsg('acxSok','nu-veer.com'); });
       else okMsg('acxSok','nu-veer.com'); return; }
     if(x==='clear'){ if(t.dataset.sure!=='1'){ t.dataset.sure='1'; t.textContent='Tap again to clear'; return; }
-      try{ ['nuveer.wish.v1','nuveer.bag.v1',K.p,K.o,K.v,K.n,'nuveer.auth.demo.v1','nuveer.auth.demo.users','nuveer.ref.v1','nuveer.ref.log'].forEach(function(k){ localStorage.removeItem(k); }); }catch(e){}
+      try{ ['nuveer.wish.v1','nuveer.bag.v1',K.p,K.o,K.v,K.n,'nuveer.auth.demo.v1','nuveer.auth.demo.users','nuveer.ref.v1','nuveer.ref.log'].forEach(function(k){ localStorage.removeItem(k); }); for(var ai=localStorage.length-1; ai>=0; ai--){ var ak=localStorage.key(ai); if(ak && ak.indexOf('nuveer.acct.v1.')===0) localStorage.removeItem(ak); } }catch(e){}
       okMsg('acxCok','Cleared. The page reloads now.'); setTimeout(function(){ location.reload(); },900); return; }
   });
 
@@ -5300,8 +5325,8 @@ if(sortKey==='pa') r.sort(function(a,b){ return a.p-b.p; });
   function close(){ el.classList.remove('open'); el.setAttribute('aria-hidden','true'); }
   function toast(t){ var e=document.getElementById('nvToast'); e.textContent=t; e.classList.add('on'); clearTimeout(e._t); e._t=setTimeout(function(){ e.classList.remove('on'); },3200); }
   function signIn(u){ put(KA,u); var p=get(KP,{}); if(!p.name) p.name=u.name; if(!p.email) p.email=u.email; put(KP,p);
-    close(); paint(); toast('Signed in. Your saved frames and bag are now in your account.'); }
-  window.nvAuth={ open:open, user:function(){ return get(KA,null); }, signOut:function(){ try{ localStorage.removeItem(KA); }catch(e){} paint(); } };
+    close(); paint(); if(window.nvShopAccount) window.nvShopAccount('in'); toast('Signed in. Your saved frames and bag are now in your account.'); }
+  window.nvAuth={ open:open, user:function(){ return get(KA,null); }, signOut:function(){ try{ localStorage.removeItem(KA); }catch(e){} paint(); if(window.nvShopAccount) window.nvShopAccount('out'); } };
 
   document.getElementById('auClose').addEventListener('click', close);
   document.getElementById('auBack').addEventListener('click', function(){ if(hist.length) show(hist.pop(),null,true); else close(); });
@@ -5631,6 +5656,29 @@ if(N<2){ var nvn=document.querySelector('#nvEdit .ne-nav'); if(nvn) nvn.style.di
     bn.innerHTML='<span class="iv-k">You are invited</span><p>'+(I.REWARDS?'A Nuveer member invited you. Create your account and get <b>'+I.FRIEND+'% off</b> your first order.':'A Nuveer member invited you to discover curated European eyewear. Create your account to join.')+'</p>'+
       '<div class="iv-row"><button class="iv-b" data-iv="join">Create account</button><button class="iv-b ghost" data-iv="later">Later</button></div>';
     document.body.appendChild(bn); setTimeout(function(){ bn.classList.add('on'); },2600); }
+})();
+</script>
+
+<script>
+/* ===== grids: no grey block next to an odd last card (Saved with 1 frame, filtered results …) ===== */
+(function(){
+  function cols(g){ var t=getComputedStyle(g).gridTemplateColumns; return (!t||t==='none') ? 1 : t.split(' ').filter(Boolean).length; }
+  function fill(g){
+    [].slice.call(g.children).forEach(function(x){ if(x.classList.contains('gfill')) g.removeChild(x); });
+    var items=[].slice.call(g.children).filter(function(x){ var gc=(x.style.gridColumn||'').replace(/\s/g,''); return gc!=='1/-1'; });
+    var c=cols(g), wide=items.length!==g.children.length;
+    if(wide || !items.length || c<2) return;
+    var r=items.length%c; if(!r) return;
+    for(var i=0;i<c-r;i++){ var f=document.createElement('div'); f.className='gfill'; f.setAttribute('aria-hidden','true'); g.appendChild(f); }
+  }
+  function watch(g){
+    var mo=new MutationObserver(function(){ mo.disconnect(); fill(g); mo.observe(g,{childList:true}); });
+    mo.observe(g,{childList:true}); fill(g);
+    if('ResizeObserver' in window){ var lastC=0; new ResizeObserver(function(){ var c=cols(g); if(c!==lastC){ lastC=c; mo.disconnect(); fill(g); mo.observe(g,{childList:true}); } }).observe(g); }
+  }
+  [].slice.call(document.querySelectorAll('.grid')).forEach(watch);
+  /* signed in from an earlier visit: bring the account's frames and bag back */
+  try{ if(window.nvShopAccount) window.nvShopAccount('load'); }catch(e){}
 })();
 </script>
 
