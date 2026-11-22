@@ -5677,6 +5677,10 @@ if(N<2){ var nvn=document.querySelector('#nvEdit .ne-nav'); if(nvn) nvn.style.di
     if('ResizeObserver' in window){ var lastC=0; new ResizeObserver(function(){ var c=cols(g); if(c!==lastC){ lastC=c; mo.disconnect(); fill(g); mo.observe(g,{childList:true}); } }).observe(g); }
   }
   [].slice.call(document.querySelectorAll('.grid')).forEach(watch);
+  window.nvGridFillAll=function(){ [].slice.call(document.querySelectorAll('.grid')).forEach(fill); };
+  document.addEventListener('click', function(){ setTimeout(window.nvGridFillAll,60); setTimeout(window.nvGridFillAll,450); }, true);
+  addEventListener('pageshow', function(){ setTimeout(window.nvGridFillAll,60); });
+  addEventListener('resize', function(){ setTimeout(window.nvGridFillAll,60); });
   /* signed in from an earlier visit: bring the account's frames and bag back */
   try{ if(window.nvShopAccount) window.nvShopAccount('load'); }catch(e){}
 })();
@@ -5686,7 +5690,19 @@ if(N<2){ var nvn=document.querySelector('#nvEdit .ne-nav'); if(nvn) nvn.style.di
 /* Nuveer app: keep the site and its photos on the phone so it opens offline; ask the browser to keep stored data */
 (function(){
   if(location.protocol!=='https:' && location.hostname!=='localhost' && location.hostname!=='127.0.0.1') return;
-  if('serviceWorker' in navigator){ addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+  if('serviceWorker' in navigator){
+    var hadCtl=!!navigator.serviceWorker.controller;
+    addEventListener('load', function(){ navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(function(reg){
+      /* the app resumes from the background without reloading: look for a new version each time it comes back */
+      document.addEventListener('visibilitychange', function(){ if(!document.hidden) reg.update().catch(function(){}); });
+    }).catch(function(){}); });
+    /* a new version took over: show it right away (once) */
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if(!hadCtl){ hadCtl=true; return; }
+      try{ if(sessionStorage.getItem('nv.sw.reloaded')) return; sessionStorage.setItem('nv.sw.reloaded','1'); }catch(e){}
+      location.reload();
+    });
+  }
   try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function(){}); }catch(e){}
 })();
 </script>
