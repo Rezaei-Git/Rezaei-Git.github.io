@@ -5520,7 +5520,14 @@ if(N<2){ var nvn=document.querySelector('#nvEdit .ne-nav'); if(nvn) nvn.style.di
   }
   function stop(){ if(stopped) return; stopped=true; clearTimeout(timer); timer=0; dots.classList.remove('ap','hold'); }
   /* the visitor takes over: arrows, dots, a swipe or a tap, the keyboard */
-  deck.addEventListener('pointerdown', stop, true);
+  /* nvAutoTouch: a sideways swipe or a tap takes over; a vertical page scroll over the cards only pauses */
+  var t0=null;
+  deck.addEventListener('pointerdown', function(e){ t0={x:e.clientX,y:e.clientY,mx:0,my:0}; pause(); }, true);
+  deck.addEventListener('pointermove', function(e){ if(!t0) return; t0.mx=Math.max(t0.mx,Math.abs(e.clientX-t0.x)); t0.my=Math.max(t0.my,Math.abs(e.clientY-t0.y)); }, true);
+  function endTouch(e,cancel){ if(!t0) return; var dx=Math.max(t0.mx,Math.abs(e.clientX-t0.x)), dy=Math.max(t0.my,Math.abs(e.clientY-t0.y)); t0=null;
+    if((dx>12 && dx>dy) || (!cancel && dx<10 && dy<10)) stop(); else run(false); }
+  deck.addEventListener('pointerup', function(e){ endTouch(e,false); }, true);
+  deck.addEventListener('pointercancel', function(e){ endTouch(e,true); }, true);
   ['nePrev','neNext'].forEach(function(id){ var b=document.getElementById(id); if(b) b.addEventListener('click', stop, true); });
   dots.addEventListener('click', stop, true);
   sec.addEventListener('keydown', function(e){ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' ') stop(); }, true);
