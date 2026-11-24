@@ -1,0 +1,17 @@
+name: gold-probe
+on:
+  push:
+    paths: ['gold/tools/probe.py', '.github/workflows/gold-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install requests
+      - run: python3 gold/tools/probe.py
+      - run: |
+          git config user.name "Gold Berlin bot"; git config user.email "a.rezaei.official@gmail.com"
+          git add gold/debug && git commit -m "gold: probe" && git push || true
