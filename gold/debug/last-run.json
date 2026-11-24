@@ -1,1 +1,1 @@
-{"id": "20261124-0458", "spot": {"g": 106.97, "src": "gold.de/goldpreis.de", "prev_close": 107.22, "high": 108.28, "low": 106.77}, "spot_err": null, "n_prices": 27, "changed": 27, "errors": {}, "wrote": ["prices", "spot"]}
+{"id": "20261124-0916", "spot": {"g": 106.71, "src": "gold.de/goldpreis.de", "prev_close": 107.22, "high": 108.28, "low": 106.56}, "spot_err": null, "n_prices": 23, "changed": 15, "errors": {"rs": "fetch failed: 503 Server Error: Service Unavailable for url: https://shop.rheinische-scheidest"}, "wrote": ["prices", "spot"]}
