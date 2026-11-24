@@ -1,7 +1,7 @@
 name: gold-collect
 on:
   schedule:
-    - cron: '7,37 * * * 1-6'
+    - cron: '*/30 * * * *'
   push:
     paths: ['gold/tools/scrape.py', '.github/workflows/gold-collect.yml']
   workflow_dispatch:
