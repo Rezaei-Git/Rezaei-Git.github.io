@@ -20,8 +20,8 @@
   function stale(P){ var last=P.length?Date.parse(P[P.length-1].ts):0, now=Date.now(), age=(now-last)/36e5;
     var f=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Berlin',weekday:'short',hour:'2-digit',hour12:false}).formatToParts(new Date());
     var wd=f.find(function(x){return x.type==='weekday';}).value, h=+f.find(function(x){return x.type==='hour';}).value;
-    var workday=['Mon','Tue','Wed','Thu','Fri'].indexOf(wd)>-1;
-    var bad=!last || (workday && h>=12 && age>7) || age>80;
+    var workday=['Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(wd)>-1;
+    var bad=!last || (workday && h>=8 && h<23 && age>2) || age>40;
     var el=document.getElementById('stale-banner');
     if(!el){ var home=document.getElementById('v-home'); if(!home) return; el=document.createElement('div'); el.id='stale-banner';
       el.style.cssText='margin:10px 16px 4px;padding:13px 15px;border-radius:18px;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.45);color:#ffd36b;font-size:.86rem;line-height:1.45';
