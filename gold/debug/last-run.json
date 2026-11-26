@@ -1,1 +1,1 @@
-{"id": "20261126-0331", "spot": {"g": 105.13, "src": "gold.de/goldpreis.de", "prev_close": 105.12, "high": 105.12, "low": 104.31}, "spot_err": null, "n_prices": 25, "changed": 10, "errors": {"goldexchange": "100g buy out of range"}, "wrote": ["prices", "spot"]}
+{"id": "20261126-0400", "spot": {"g": 105.38, "src": "gold.de/goldpreis.de", "prev_close": 105.12, "high": 105.65, "low": 104.31}, "spot_err": null, "n_prices": 25, "changed": 7, "errors": {"goldexchange": "100g buy out of range"}, "wrote": ["prices", "spot"]}
