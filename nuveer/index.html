@@ -1805,6 +1805,22 @@
 
   /* empty cells at the end of a grid row match the page, not the line colour */
   .grid > .gfill{ background:var(--black); pointer-events:none; }
+
+  /* ---------- page never pinch-zooms; photos open in their own zoom viewer ---------- */
+  html{ touch-action:pan-x pan-y; }
+  .nvz{ position:fixed; inset:0; z-index:9000; background:#050505; display:none; touch-action:none; overscroll-behavior:contain;
+    -webkit-user-select:none; user-select:none; }
+  .nvz.open{ display:block; animation:nvzIn .22s ease; }
+  @keyframes nvzIn{ from{ opacity:0; } to{ opacity:1; } }
+  .nvz img{ position:absolute; left:50%; top:50%; max-width:100%; max-height:100%; transform-origin:50% 50%;
+    transform:translate(-50%,-50%); will-change:transform; -webkit-user-drag:none; pointer-events:none; }
+  .nvz-x{ position:absolute; top:16px; left:16px; z-index:2; width:40px; height:40px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; background:rgba(5,5,5,.55); border:1px solid rgba(245,242,236,.25);
+    color:#f5f2ec; cursor:pointer; padding:0; -webkit-appearance:none; appearance:none; }
+  .nvz-x svg{ width:16px; height:16px; }
+  .nvz-hint{ position:absolute; left:0; right:0; bottom:22px; text-align:center; font-family:'Inter',sans-serif; font-size:.62rem;
+    letter-spacing:.22em; text-transform:uppercase; color:rgba(245,242,236,.45); pointer-events:none; transition:opacity .4s ease; }
+  .nvz.zoomed .nvz-hint{ opacity:0; }
 </style>
   <style>
     /* Content-protection layer: deters casual right-click save / drag / selection copying. */
@@ -5704,6 +5720,72 @@ if(N<2){ var nvn=document.querySelector('#nvEdit .ne-nav'); if(nvn) nvn.style.di
   addEventListener('resize', function(){ setTimeout(window.nvGridFillAll,60); });
   /* signed in from an earlier visit: bring the account's frames and bag back */
   try{ if(window.nvShopAccount) window.nvShopAccount('load'); }catch(e){}
+})();
+</script>
+
+<div class="nvz" id="nvZoom" role="dialog" aria-modal="true" aria-label="Photo" aria-hidden="true">
+  <button class="nvz-x" type="button" aria-label="Close photo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  <img alt="">
+  <div class="nvz-hint">Pinch to zoom · swipe down to close</div>
+</div>
+<script>
+/* ===== nvZoom: pinch a photo -> it opens on its own; the page never zooms (that is what crashed iPhone) ===== */
+(function(){
+  var box=document.getElementById('nvZoom'); if(!box) return;
+  var im=box.querySelector('img'), xb=box.querySelector('.nvz-x');
+  var s=1, tx=0, ty=0, open=false, g=null, lastTap=0, lastFocus=null;
+  var PICK='.qv-media img, .qv-preview img, .ne-card img, .leaf .face img, .lookbook-photo, .card img, .tile img, .lb-story-avatar img, img.nv-zoomable';
+  function apply(anim){ im.style.transition=anim?'transform .25s ease':'none';
+    im.style.transform='translate(-50%,-50%) translate('+tx+'px,'+ty+'px) scale('+s+')'; box.classList.toggle('zoomed', s>1.02); }
+  function bounds(){ var w=im.offsetWidth*s, h=im.offsetHeight*s, mx=Math.max(0,(w-innerWidth)/2), my=Math.max(0,(h-innerHeight)/2);
+    tx=Math.max(-mx,Math.min(mx,tx)); ty=Math.max(-my,Math.min(my,ty)); }
+  function show(src){ if(!src) return false; im.src=src; s=1; tx=0; ty=0; apply(false); open=true; lastFocus=document.activeElement;
+    box.classList.add('open'); box.setAttribute('aria-hidden','false'); try{ xb.focus({preventScroll:true}); }catch(e){} return true; }
+  function hide(){ open=false; g=null; box.classList.remove('open','zoomed'); box.setAttribute('aria-hidden','true'); im.removeAttribute('src');
+    if(lastFocus && lastFocus.focus) try{ lastFocus.focus({preventScroll:true}); }catch(e){} }
+  window.nvZoomOpen=show; window.nvZoomClose=hide;
+  function srcOf(el){ if(!el || !el.closest) return ''; if(el.closest('#nvZoom')) return '';
+    var t=el.closest(PICK) || (el.closest('.ne-card,.card,.tile,.qv-media,.lookbook-card,.leaf') || {querySelector:function(){return null;}}).querySelector('img:not([aria-hidden="true"])');
+    if(!t) return ''; var r=t.getBoundingClientRect(); if(r.width<80 || r.height<60) return '';
+    return t.currentSrc || t.src || ''; }
+  function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+  function mid(a,b){ return {x:(a.clientX+b.clientX)/2, y:(a.clientY+b.clientY)/2}; }
+
+  /* two fingers on a photo: open it and keep pinching inside the viewer */
+  document.addEventListener('touchstart', function(e){
+    if(e.touches.length===2){
+      if(!open){ var a=document.elementFromPoint(e.touches[0].clientX,e.touches[0].clientY), src=srcOf(a)||srcOf(e.target); if(!show(src)) { e.preventDefault(); return; } }
+      e.preventDefault();
+      g={d:dist(e.touches[0],e.touches[1]), s:s, m:mid(e.touches[0],e.touches[1]), tx:tx, ty:ty, pinch:true};
+    } else if(open && e.touches.length===1){
+      var t=e.touches[0], now=Date.now();
+      if(e.target===xb || xb.contains(e.target)) return;
+      e.preventDefault();
+      if(now-lastTap<300){ s = s>1.05 ? 1 : 2.6; tx=0; ty=0; apply(true); lastTap=0; g=null; return; }
+      lastTap=now; g={x:t.clientX, y:t.clientY, tx:tx, ty:ty, pinch:false};
+    }
+  }, {passive:false, capture:true});
+  document.addEventListener('touchmove', function(e){
+    if(!open){ if(e.touches.length>1) e.preventDefault(); return; }
+    e.preventDefault(); if(!g) return;
+    if(g.pinch && e.touches.length>=2){ var d=dist(e.touches[0],e.touches[1]), m=mid(e.touches[0],e.touches[1]);
+      s=Math.max(1,Math.min(5,g.s*d/g.d)); tx=g.tx+(m.x-g.m.x); ty=g.ty+(m.y-g.m.y); bounds(); apply(false); }
+    else if(!g.pinch && e.touches.length===1){ var t=e.touches[0];
+      if(s>1.02){ tx=g.tx+(t.clientX-g.x); ty=g.ty+(t.clientY-g.y); bounds(); apply(false); }
+      else { ty=Math.max(0,t.clientY-g.y); apply(false); box.style.background='rgba(5,5,5,'+Math.max(.35,1-ty/500)+')'; } }
+  }, {passive:false, capture:true});
+  document.addEventListener('touchend', function(e){
+    if(!open || !g) return;
+    if(!g.pinch && s<=1.02 && ty>110){ box.style.background=''; hide(); return; }
+    if(e.touches.length===0){ if(s<1.05){ s=1; tx=0; ty=0; } box.style.background=''; apply(true); g=null; }
+    else if(e.touches.length===1 && g.pinch){ var t=e.touches[0]; g={x:t.clientX, y:t.clientY, tx:tx, ty:ty, pinch:false}; }
+  }, {passive:false, capture:true});
+  /* Safari's own page-zoom gestures: never zoom the page */
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){ document.addEventListener(n, function(e){ e.preventDefault(); }, {passive:false}); });
+  xb.addEventListener('click', function(e){ e.stopPropagation(); hide(); });
+  document.addEventListener('keydown', function(e){ if(open && e.key==='Escape'){ e.stopPropagation(); hide(); } }, true);
+  /* mouse / trackpad: double-click a photo inside the viewer to zoom, click outside the photo to close */
+  box.addEventListener('dblclick', function(e){ s = s>1.05 ? 1 : 2.6; tx=0; ty=0; apply(true); });
 })();
 </script>
 
