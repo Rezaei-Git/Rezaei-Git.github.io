@@ -1,1 +1,1 @@
-{"id": "20261127-1918", "spot": {"g": 107.22, "src": "gold.de/goldpreis.de", "prev_close": 104.55, "high": 108.08, "low": 104.4}, "spot_err": null, "n_prices": 26, "changed": 10, "errors": {}, "wrote": ["prices", "spot"]}
+{"id": "20261127-1947", "spot": {"g": 107.06, "src": "gold.de/goldpreis.de", "prev_close": 104.55, "high": 108.08, "low": 104.4}, "spot_err": null, "n_prices": 26, "changed": 9, "errors": {}, "wrote": ["prices", "spot"]}
