@@ -1,6 +1,7 @@
 name: gold-collect
 # Collects prices every 30 minutes. One run loops for ~5.5 hours, so the app keeps
-# updating even when GitHub's scheduler is late; the schedule starts the next loop.
+# updating even when GitHub's scheduler is late. At the end it starts the next loop itself;
+# the schedule is only a backup.
 on:
   schedule:
     - cron: '*/30 * * * *'
@@ -9,6 +10,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: write
 concurrency:
   group: gold-collect
   cancel-in-progress: false
@@ -33,3 +35,8 @@ jobs:
             fi
             [ "$i" -lt 11 ] && sleep 1740
           done
+      - name: start next loop (no gap)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run gold-collect.yml --ref main || true
